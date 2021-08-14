@@ -1,4 +1,12 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-createApp(App).mount('#app')
+import jointJs from '@/plugins/jointjsimport';
+import VueSuggestion from 'vue-suggestion'
+
+const app = createApp(App);
+
+app.use(jointJs);
+app.use(VueSuggestion);
+
+app.mount('#app')

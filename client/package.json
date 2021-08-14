@@ -9,7 +9,11 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "^3.0.0"
+    "jointjs": "^3.4.0",
+    "jquery": "^3.6.0",
+    "svg-pan-zoom": "^3.6.1",
+    "vue": "^3.0.0",
+    "vue-suggestion": "^1.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
