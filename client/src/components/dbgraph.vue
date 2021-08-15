@@ -1,60 +1,17 @@
 <template>
 	<joint-paper
-    ref="jointWrapper"
-    :background="background"
-    :grid-size="gridSize"
-    :draw-grid="drawGrid"
-    @init="build" />
+        ref="jointWrapper"
+        :selected-cell="selectedCell"
+        :background="background"
+        :grid-size="gridSize"
+        :draw-grid="drawGrid"
+        @select-requested="requestSelect"
+        @init="build" />
 
 </template>
 
 <script>
 import JointPaper from './joint-paper.vue'
-
-var types = {
-    number: () => ({name: 'int'}),
-    text: () => ({name: 'string'}),
-    linkTo: (tableName) => ({name: 'link', to: tableName}),
-};
-
-function get_reference() {
-    return {
-        tables: {
-            address: {
-                captions: ["Address", "address", "Residential Address"],
-                description: "Stores an address",
-                columns: {
-                    houseNumber: {
-                        type: types.number(),
-                        captions: ["House Number"]
-                    },
-                    streetName: {
-                        type: types.text(),
-                        captions: ["Street Address", "Address 1"]
-                    },
-                    town: {
-                        type: types.text(),
-                        captions: ["Town"]
-                    }
-                }
-            },
-            person: {
-                captions: ["Person", "Member", "Staff"],
-                description: "Represents a single person",
-                columns: {
-                    address: {
-                        type: types.linkTo('address'),
-                        captions: ["Address"],
-                    },
-                    name: {
-                        type: types.text(),
-                        captions: ["Full Name", "Name"]
-                    }
-                }
-            }
-        }
-    }
-}
 
 function get_position() {
     return {x: Math.random() * 500, y: Math.random() * 500};
@@ -90,34 +47,70 @@ function findLinks(reference_data) {
     return links;
 }
 
-function buildGraph(joint, graph, reference_data) {
-    var classes = {};
-    for (const tableName in reference_data.tables) {
-        classes[tableName] = asUml(joint, tableName, reference_data.tables[tableName]);
-        graph.addCell(classes[tableName]);
-    }
-
-    var relations = findLinks(reference_data).map(l => 
-        new joint.shapes.uml.Generalization({ 
-            source: { id: classes[l.from].id },
-            target: { id: classes[l.to].id },
-        })
-    );
-
-    relations.forEach(r => graph.addCell(r));
-}
-
 export default {
   name: 'Graph',
   components: {
     'joint-paper': JointPaper
   },
+  props: {
+      reference: {
+          type: Object,
+          required: true
+      },
+      selectedReference: {
+          type: Object,
+          required: false
+      }
+  },
+  watch: {
+      selectedReference(newValue) {
+        if (newValue && newValue.table)
+            this.selectedCell = this.classes[newValue.table];
+        else
+            this.selectedCell = null
+      }
+  },
   data(){
-    return get_reference()
+    return {
+        selectedCell: null
+    }
   },
   methods: {
     build(graph) {
-      buildGraph(this.$joint, graph, get_reference());
+        var classes = {};
+        for (const tableName in this.reference.tables) {
+            classes[tableName] = asUml(this.$joint, tableName, this.reference.tables[tableName]);
+            graph.addCell(classes[tableName]);
+        }
+
+        var relations = findLinks(this.reference).map(l => 
+            new this.$joint.shapes.uml.Generalization({ 
+                source: { id: classes[l.from].id },
+                target: { id: classes[l.to].id },
+            })
+        );
+
+        relations.forEach(r => graph.addCell(r));
+        
+        this.classes = classes;
+    },
+    idFromCell(cell) {
+        for (const tableName in this.classes) {
+            if (cell.id == this.classes[tableName].id) {
+                return {table: tableName}
+            }
+        }
+        return null;
+    },
+    requestSelect(item) {
+        if (!item) {
+            return;
+        }
+
+        const id = this.idFromCell(item);
+        if (id) {
+            this.$emit('reference-requested', id);
+        }
     }
   }
 }

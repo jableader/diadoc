@@ -81,7 +81,27 @@ export default {
 			type: Boolean,
 			default: false
 		},
+        selectedCell: {
+            type: Object,
+            required: true,
+        }
 	},
+    watch: {
+        selectedCell: function(model) {
+            setTimeout(() => {
+                var container = $(this.$refs.joint)
+                this.paper.setDimensions(container.width()-10, container.height()-10);
+                this.panAndZoom.resize();
+
+                container
+                    .width('100%')
+                    .height('100%');
+
+                if (model)
+                    centerElement(model, this.panAndZoom);
+            }, 100);
+        },
+    },
 	created() {
 		this.name = this.$options.name;
 		console.log(`[${this.name}] Created`);
@@ -104,23 +124,18 @@ export default {
         this.$emit('init', this.graph);
 
         this.panAndZoom = setupPanAndZoom(this.paper, $(container).children('svg')[0]);
-
-        $(container).resize(function() {
-            this.paper.setDimensions($(container).width()-10, $(container).height()-10);
-            this.panAndZoom.resize();
-        });
-
-        const _this = this;
-        this.paper.on('element:pointerdblclick', function(elementView) {
-            centerElement(elementView.model, _this.panAndZoom);
-            _this.$emit('focus-requested', elementView.model);
-        });
+        this.paper.on('element:pointerdblclick', (function(elementView) {
+            this.$emit('select-requested', elementView.model);
+        }).bind(this));
 
         // The paper initialiser overwrites our css width & height, gotta set them back
         $(container)
             .width('100%')
             .height('100%');
 	},
+    onResize() {
+
+    },
     getSizes() {
         return this.panAndZoom.getSizes();
     },
