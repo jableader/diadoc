@@ -33,12 +33,13 @@ function centerElement(model, panAndZoom){
     
     // We want our element to take up 80% of the vertical space
     // but no more than 50% of the horizontal space
-    let elementPosition = model.attributes.position;
     let elementSize = model.attributes.size;
     let pzSizes = panAndZoom.getSizes();
 
+    panAndZoom.center();
     panAndZoom.pan({x: 0, y: 0});
 
+    let elementPosition = model.attributes.position;
     var ox = elementPosition.x + elementSize.width / 2;
     var oy = elementPosition.y + elementSize.height / 2;
     
@@ -47,6 +48,7 @@ function centerElement(model, panAndZoom){
     var dy = -oy*z + pzSizes.height / 2; // + z*viewBox.y;
     
     panAndZoom.pan({x: dx, y: dy});
+    panAndZoom.zoomAtPoint(2, {x: pzSizes.width / 2, y: pzSizes.height / 2});
 }
 
 function setupNavigation(joint, graph, paper, targetElement) {

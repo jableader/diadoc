@@ -10,6 +10,9 @@
 <script>
 import JointPaper from './joint-paper.vue'
 
+const shapeColor = '#b2b0e6';
+const shapeStroke = '#8b85ff';
+
 function get_position() {
     return {x: Math.random() * 500, y: Math.random() * 500};
 }
@@ -26,6 +29,23 @@ function asUml(joint, name, table) {
         size: { width: 240, height: 100 },
         name: name,
         attributes: attrs,
+        attrs: {
+            '.uml-class-name-rect': {
+                fill: shapeColor,
+                stroke: shapeStroke,
+                'stroke-width': 1
+            },
+            '.uml-class-attrs-rect': {
+                fill: shapeColor,
+                stroke: shapeStroke,
+                'stroke-width': 0.5
+            },
+            '.uml-class-methods-rect': {
+                fill: shapeColor,
+                stroke: shapeStroke,
+                'stroke-width': 0.5
+            }
+        }
     });
 }
 

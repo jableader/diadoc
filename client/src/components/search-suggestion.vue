@@ -1,13 +1,10 @@
 <template>
   <div>
     <h1 class="title">
-      {{ item.table }}
-      <span v-if="item.column">
-        - {{ item.column }}
-      </span>
+      {{ item.query }}
     </h1>
     <h2>
-      {{ item.captions.join(", ") }}
+      {{ item.caption }}
     </h2>
   </div>
 </template>
@@ -28,7 +25,7 @@ export default {
 
   h1 {
     font-size: large;
-    font-weight: bold;
+    font-weight: normal;
   }
 
   h2 {

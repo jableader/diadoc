@@ -11,7 +11,7 @@
 
         <div
             class="search-droplist"
-            v-if="isTyping" >
+            v-if="isTyping">
             <ul>
                 <li v-for="item in suggestions" 
                     :key="uniqueSearchKey(item)" 
@@ -101,8 +101,8 @@ export default {
         suggestionSelected(item) {
             console.log(item);
 
-            this.searchTerm = item.table + (item.column ? (" - " + item.column): "");
-            this.$emit('item-selected', item);
+            this.searchTerm = item.query;
+            this.$emit('item-selected', item.query);
             this.stoppedTyping();
         }
     }
@@ -111,27 +111,26 @@ export default {
 
 <style scoped>
 ul {
-    margin-left: auto;
-    margin-right: auto;
+    margin-top: 0;
     
     padding: 1px;
     border: 1px solid gray;
-    max-width: 500px;
     background-color: white;
+    color: black;
 }
 
 li {
     list-style-type: none;
+    padding-left: 10px;
     border-bottom: 1px solid gray;
-}
-
-li:hover {
-    background-color: lightgray;
 }
 
 input[type=text] {
     width: 100%;
     height: 2em;
+
+    border-radius: 20px;
+    padding-left: 10px;
     font-size: larger;
 }
 

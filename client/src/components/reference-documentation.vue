@@ -43,7 +43,6 @@ export default {
 div {
     text-align: left;
     padding-left: 1.2em;
-    overflow-x:;
 }
 
 </style>
