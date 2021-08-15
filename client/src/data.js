@@ -1,8 +1,4 @@
-const types = {
-    number: () => ({name: 'int'}),
-    text: () => ({name: 'string'}),
-    linkTo: (tableName) => ({name: 'link', to: tableName}),
-};
+var __referenceMetaData = null;
 
 function searchForTables(tables, searchQuery) {
     const r = new RegExp(searchQuery, "g");
@@ -46,43 +42,36 @@ function searchForTables(tables, searchQuery) {
 
 export default {
     search(text) {
-        return searchForTables(this.referenceMetaData.tables, text);
+        if (!__referenceMetaData)
+            return [];
+
+        return searchForTables(__referenceMetaData.tables, text);
     },
 
-    referenceMetaData: {
-        tables: {
-            address: {
-                captions: ["Address", "address", "Residential Address"],
-                description: "Stores an address",
-                columns: {
-                    houseNumber: {
-                        type: types.number(),
-                        captions: ["House Number"]
-                    },
-                    streetName: {
-                        type: types.text(),
-                        captions: ["Street Address", "Address 1"]
-                    },
-                    town: {
-                        type: types.text(),
-                        captions: ["Town"]
-                    }
-                }
-            },
-            person: {
-                captions: ["Person", "Member", "Staff"],
-                description: "Represents a single person",
-                columns: {
-                    address: {
-                        type: types.linkTo('address'),
-                        captions: ["Address"],
-                    },
-                    name: {
-                        type: types.text(),
-                        captions: ["Full Name", "Name"]
-                    }
-                }
-            }
+    fetchReferenceMetadata() {
+        if (__referenceMetaData) {
+            return new Promise((r) => r(__referenceMetaData))
         }
+
+        return fetch('/reference/meta.json')
+            .then(r => r.json())
     },
+
+    fetchReference(id) {
+        if (!id) {
+            return new Promise((g, b) => b("Null id"));
+        }
+
+        if (id.table && id.column) {
+            return fetch(`/reference/tables/${id.table}/${id.column}.md`)
+                .then(r => r.text());
+        }
+
+        if (id.table) {
+            return fetch(`/reference/tables/${id.table}/self.md`)
+                .then(r => r.text());
+        }
+
+        return new Promise((g, b) => b("Bad id"));
+    }
 }

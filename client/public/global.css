@@ -1,0 +1,10 @@
+.markdown-editor > div {
+    max-width: 100%;
+    padding-right: 1em;
+}
+
+.markdown-editor code {
+    display: inline-block;
+    overflow: auto;
+    max-width: 100%;
+}

@@ -8,5 +8,4 @@ const app = createApp({
 });
 
 app.use(jointJs);
-
 app.mount('#app')

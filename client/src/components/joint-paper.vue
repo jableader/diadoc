@@ -6,13 +6,11 @@
 import svgPanZoom from 'svg-pan-zoom'
 import $ from 'jquery'
 
-function setupPanAndZoom(paper, targetElement) {
+function createPanAndZoom(paper, targetElement) {
     const viewport = $(targetElement).children('.joint-layers')[0];
     const panAndZoom = svgPanZoom(targetElement, 
     {
         viewportSelector: viewport,
-        fit: true,
-        zoomScaleSensitivity: 0.4,
         panEnabled: false,
         dblClickZoomEnabled: false,
     });
@@ -31,15 +29,13 @@ function setupPanAndZoom(paper, targetElement) {
 }
 
 function centerElement(model, panAndZoom){
+    panAndZoom.zoom(1);
+    
     // We want our element to take up 80% of the vertical space
     // but no more than 50% of the horizontal space
     let elementPosition = model.attributes.position;
     let elementSize = model.attributes.size;
     let pzSizes = panAndZoom.getSizes();
-    var desiredZoom = Math.min(
-        (pzSizes.width / elementSize.width) * 0.5,
-        (pzSizes.height / elementSize.height) * 0.8
-    );
 
     panAndZoom.pan({x: 0, y: 0});
 
@@ -51,7 +47,19 @@ function centerElement(model, panAndZoom){
     var dy = -oy*z + pzSizes.height / 2; // + z*viewBox.y;
     
     panAndZoom.pan({x: dx, y: dy});
-    panAndZoom.zoom(desiredZoom);
+}
+
+function setupNavigation(joint, graph, paper, targetElement) {
+    var dummyObject = new joint.shapes.basic.Circle({
+        position: {x: 0, y: 0},
+        size: { width: 800, height: 800 },
+    });
+    dummyObject.addTo(graph);
+
+    var panAndZoom = createPanAndZoom(paper, targetElement);
+    dummyObject.remove();
+
+    return panAndZoom;
 }
 
 export default {
@@ -82,7 +90,7 @@ export default {
 			default: false
 		},
         selectedCell: {
-            type: Object,
+            type: [Object, null],
             required: true,
         }
 	},
@@ -122,8 +130,8 @@ export default {
 			interactive: !this.readonly
 		});
         this.$emit('init', this.graph);
-
-        this.panAndZoom = setupPanAndZoom(this.paper, $(container).children('svg')[0]);
+        this.panAndZoom = setupNavigation(this.$joint, this.graph, this.paper, $(container).children('svg')[0]);
+        
         this.paper.on('element:pointerdblclick', (function(elementView) {
             this.$emit('select-requested', elementView.model);
         }).bind(this));
@@ -133,9 +141,6 @@ export default {
             .width('100%')
             .height('100%');
 	},
-    onResize() {
-
-    },
     getSizes() {
         return this.panAndZoom.getSizes();
     },

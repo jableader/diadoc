@@ -2,9 +2,6 @@
 	<joint-paper
         ref="jointWrapper"
         :selected-cell="selectedCell"
-        :background="background"
-        :grid-size="gridSize"
-        :draw-grid="drawGrid"
         @select-requested="requestSelect"
         @init="build" />
 
@@ -54,7 +51,7 @@ export default {
   },
   props: {
       reference: {
-          type: Object,
+          type: [Object, null],
           required: true
       },
       selectedReference: {
@@ -63,12 +60,15 @@ export default {
       }
   },
   watch: {
-      selectedReference(newValue) {
+    selectedReference(newValue) {
         if (newValue && newValue.table)
             this.selectedCell = this.classes[newValue.table];
         else
             this.selectedCell = null
-      }
+    },
+    reference() {
+        this.build();
+    }
   },
   data(){
     return {
@@ -76,7 +76,12 @@ export default {
     }
   },
   methods: {
-    build(graph) {
+    build() {
+        var graph = this.$refs.jointWrapper.graph;
+        if (!this.reference || !graph) {
+            return; // Nothing to build
+        }
+
         var classes = {};
         for (const tableName in this.reference.tables) {
             classes[tableName] = asUml(this.$joint, tableName, this.reference.tables[tableName]);

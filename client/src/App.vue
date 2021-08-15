@@ -24,7 +24,7 @@
     <div class="reference-documentation" v-if="selectedReference">
       <button @click="selectedReference=null">Close</button>
       <br />
-      <reference-documentation :source="selectedReference" />
+      <reference-documentation :source-id="selectedReference" />
     </div>
   </div>
 </template>
@@ -45,10 +45,14 @@ export default {
   data (){
     return {
       searchTerm: {},
-      searchSuggestions: data.search("a"),
-      reference: data.referenceMetaData,
+      searchSuggestions: [],
+      reference: null,
       selectedReference: null
     }
+  },
+  created() {
+    data.fetchReferenceMetadata()
+      .then(g => this.reference = g);
   },
   methods: {
     search(item) {
@@ -105,10 +109,12 @@ export default {
 
 .reference-documentation {
   position: absolute;
+  overflow-y: scroll;
+
   right: 0px;
   top: 8ex;
+  bottom: 0;
   width: 50%;
-  height: 100%;
   background-color: peachpuff;
   z-index: 20;
 }
