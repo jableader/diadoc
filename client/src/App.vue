@@ -1,10 +1,10 @@
 <template>
   <div class="top-level">
-    <div class="graph-container" :style="{ 'right': selectedReference ? '50%' : '0', left: searchResults ? '30ex' : '0'}">
+    <div class="graph-container" :style="{ 'right': selectedReferenceId ? '50%' : '0', left: searchResults ? '30ex' : '0'}">
       <dbgraph 
         ref="graph"
         :reference="reference"
-        :selected-reference="selectedReference"
+        :selected-reference="selectedReferenceId"
         @reference-requested="showReference"
         />
     </div>
@@ -26,21 +26,22 @@
       <button @click="searchResults=null">X</button>
       <results-panel 
           :searchResults="searchResults"
-          :selectedItem="selectedReference" 
+          :selectedId="selectedReferenceId" 
           @item-selected="showReference"/>
     </div>
 
-    <div class="reference-documentation" v-if="selectedReference">
-      <button @click="selectedReference=null">X</button>
-      <br />
-      <reference-documentation :source-id="selectedReference" />
+    <div class="reference-panel" v-if="selectedReferenceId">
+      <reference-panel
+        :source-id="selectedReferenceId"
+        @close="selectedReferenceId=null" 
+        @reference-requested="showReference"/>
     </div>
   </div>
 </template>
 
 <script>
+import ReferencePanel from './components/reference-panel.vue'
 import Dbgraph from './components/dbgraph.vue';
-import ReferenceDocumentation from './components/reference-documentation.vue'
 import ResultsPanel from './components/results-panel.vue';
 import SearchBox from './components/search-box.vue'
 import data from './data';
@@ -50,15 +51,15 @@ export default {
   components: {
     Dbgraph,
     SearchBox,
-    ReferenceDocumentation,
     ResultsPanel,
+    ReferencePanel
   },
   data (){
     return {
       searchSuggestions: [],
       searchResults: null,
       reference: null,
-      selectedReference: null
+      selectedReferenceId: null,
     }
   },
   created() {
@@ -70,7 +71,7 @@ export default {
       this.searchResults = data.searchResults(item);
     },
     showReference(id) {
-      this.selectedReference = id;
+      this.selectedReferenceId = id;
     },
     updateSearchSuggestions(text) {
       this.searchSuggestions = data.searchSuggestions(text);
@@ -147,7 +148,7 @@ export default {
   right: 5px;
 }
 
-.reference-documentation {
+.reference-panel {
   position: absolute;
   z-index: 20;
 

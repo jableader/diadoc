@@ -1,1 +1,0 @@
-This represents an individual house number

@@ -16,8 +16,7 @@
                 <li v-for="item in suggestions" 
                     :key="uniqueSearchKey(item)" 
                     @click="suggestionSelected(item)">
-
-                    <search-suggestion :item="item"/>
+                    {{ item }}
                 </li>
             </ul>
         </div>
@@ -25,10 +24,8 @@
 </template>
 
 <script>
-import searchSuggestion from './search-suggestion.vue';
 
 export default {
-    components: { searchSuggestion },
     props: {
         suggestions: {
             type: Array,
@@ -99,10 +96,8 @@ export default {
             this.isTyping = true;
         },
         suggestionSelected(item) {
-            console.log(item);
-
-            this.searchTerm = item.query;
-            this.$emit('item-selected', item.query);
+            this.searchTerm = item;
+            this.$emit('item-selected', item);
             this.stoppedTyping();
         }
     }

@@ -10,11 +10,11 @@
 <script>
 import JointPaper from './joint-paper.vue'
 
-const shapeColor = '#b2b0e6';
-const shapeStroke = '#8b85ff';
+const shapeColor = 'rgba(176, 178, 230, 0.2)';
+const shapeStroke = 'rgba(139, 133, 255, 0.6)';
 
 function get_position() {
-    return {x: Math.random() * 500, y: Math.random() * 500};
+    return {x: Math.random() * 1920, y: Math.random() * 1080};
 }
 
 function asUml(joint, name, table) {
@@ -24,26 +24,26 @@ function asUml(joint, name, table) {
         attrs.push(`${column.type.name}: ${columnName}`);
     }
 
-    return new joint.shapes.uml.Class({
-        position: get_position(name),
-        size: { width: 240, height: 100 },
+    const headerHeight = 20;
+    const attrHeight = 16;
+
+    const longestAttr = attrs.reduce((l, r) => Math.max(l, r.length), 0);
+    const width = Math.max(100, Math.min(500, longestAttr * 10));
+    const height = headerHeight + attrHeight * Object.keys(table.columns).length;
+
+    return new joint.shapes.uml.State({
+        position: get_position(),
+        size: { width, height },
         name: name,
-        attributes: attrs,
+        events: attrs,
         attrs: {
-            '.uml-class-name-rect': {
+            '.uml-state-body': {
                 fill: shapeColor,
                 stroke: shapeStroke,
-                'stroke-width': 1
+                'stroke-width': 1.5
             },
-            '.uml-class-attrs-rect': {
-                fill: shapeColor,
+            '.uml-state-separator': {
                 stroke: shapeStroke,
-                'stroke-width': 0.5
-            },
-            '.uml-class-methods-rect': {
-                fill: shapeColor,
-                stroke: shapeStroke,
-                'stroke-width': 0.5
             }
         }
     });
