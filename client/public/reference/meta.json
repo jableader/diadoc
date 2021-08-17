@@ -1,0 +1,65 @@
+{
+	"tables":{
+		"address":{
+			"captions":[
+				"Address",
+				"address",
+				"Residential Address"
+			],
+			"columns":{
+				"houseNumber":{
+					"type": {
+						"name":"int"
+					},
+					"captions":[
+						"House Number"
+					]
+				},
+				"streetName":{
+					"type":{
+						"name":"string"
+					},
+					"captions":[
+						"Street Address",
+						"Address 1"
+					]
+				},
+				"town":{
+					"type":{
+						"name":"string"
+					},
+					"captions":[
+						"Town"
+					]
+				}
+			}
+		},
+		"person":{
+			"captions":[
+				"Person",
+				"Member",
+				"Staff"
+			],
+			"columns":{
+				"address":{
+					"type":{
+						"name":"link",
+						"to":"address"
+					},
+					"captions":[
+						"Address"
+					]
+				},
+				"name":{
+					"type":{
+						"name":"string"
+					},
+					"captions":[
+						"Full Name",
+						"Name"
+					]
+				}
+			}
+		}
+	}
+}

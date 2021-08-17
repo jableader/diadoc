@@ -1,0 +1,24 @@
+.markdown-editor > div {
+    max-width: 100%;
+    padding-right: 1em;
+}
+
+.markdown-editor code {
+    display: inline-block;
+    overflow: auto;
+    max-width: 100%;
+
+    padding: 1ex 1em;
+    border: solid 2px #999999;
+    border-radius: 5px;
+}
+
+.primary {
+    color: white;
+    background-color: #625ad8;
+}
+
+.primary li :hover {
+    background-color: #523ac8;
+    color: white;
+}
