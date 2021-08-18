@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import data from '@/data.js'
 
 export default {
     props: {
@@ -15,11 +14,6 @@ export default {
             required: true
         }
     },
-    data: function() {
-        return {
-            path: data.friendlyId(this.item.id)
-        }
-    }
 }
 </script>
 

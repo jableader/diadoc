@@ -13,7 +13,7 @@
               Related content
           </h4>
           <ul>
-              <li v-for="item in relatedItems" :key="item">
+              <li v-for="item in relatedItems" :key="item.path">
                   <a href="#" @click="$emit('reference-requested', item)">
                     {{ friendlyId(item) }}
                   </a>
@@ -25,7 +25,7 @@
 
 <script>
 import ReferenceDocumentation from './reference-documentation.vue'
-import data from '@/data';
+import graph from '@/graph.js'
 
 export default {
     components: {
@@ -36,15 +36,19 @@ export default {
             type: Object,
             required: true,
         },
+        referenceMetaData: {
+            type: Object,
+            required: true
+        }
     },
     computed: {
         relatedItems() {
-            return data.getRelated(this.sourceId);
+            return graph.getRelated(this.referenceMetaData, this.sourceId);
         }
     },
     methods: {
-        friendlyId(item) {
-            return data.friendlyId(item);
+        friendlyId(id) {
+            return graph.friendlyId(id);
         },
     }
 }

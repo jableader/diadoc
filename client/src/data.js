@@ -80,13 +80,7 @@ const searchForSuggestions = (function() {
     }
 })();
 
-function friendlyId(id) {
-    return id.path;
-}
-
 export default {
-    friendlyId,
-
     searchSuggestions(text) {
         if (!__referenceMetaData)
             return [];
@@ -114,56 +108,6 @@ export default {
             });
     },
 
-    collect(id) {
-        const result = [ __referenceMetaData ];
-        function _collect(node, subpath) {
-            if (!node) {
-                console.log("Attempting to navigate to falsy")
-                return node;
-            }
-
-            if (!subpath) {
-                return node;
-            }
-
-            var nextPath = subpath.split('/', 1)[0];
-            const next = node[nextPath];
-            if (!next || typeof(next) != "object") {
-                console.log("Invalid path provided")
-                return node;
-            }
-
-            result.push(next);
-            _collect(next, subpath.substring(nextPath.length + 1));
-        }
-
-        _collect(__referenceMetaData, id.path.substring(1));
-        return result;
-    },
-
-    getRelated(id) {
-        if (!id) {
-            return []
-        }
-
-        var parent = id.path.split('/');
-        parent.pop();
-        parent = parent.join('/');
-        
-        var results = [];
-        if (parent && parent != '/') {
-            results.push({path: parent});
-        }
-
-        var nodes = this.collect(id);
-        var node = nodes[nodes.length - 1];
-        for (const child in node) {
-            results.push({ path: id.path + '/' + child });
-        }
-
-        return results;
-    },
-
     fetchReference(id) {
         if (!id) {
             return new Promise((g, b) => b("Null id"));
@@ -171,5 +115,5 @@ export default {
 
         return fetch(`/reference/${id.path}/self.md`)
                 .then(r => r.text());
-    }
+    },
 }

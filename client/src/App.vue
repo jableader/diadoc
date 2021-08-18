@@ -33,6 +33,7 @@
     <div class="reference-panel" v-if="selectedReferenceId">
       <reference-panel
         :source-id="selectedReferenceId"
+        :referenceMetaData="reference"
         @close="selectedReferenceId=null" 
         @reference-requested="showReference"/>
     </div>
