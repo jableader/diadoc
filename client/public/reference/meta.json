@@ -28,7 +28,9 @@
         "address":{
             "__meta":{
                 "caption": "link: address",
-                "to":"address"
+                "link": {
+                    "to": "/address"
+                }
             }
         },
         "name":{
