@@ -1,96 +1,98 @@
 var __referenceMetaData = null;
 
-function searchForIds(tables, searchQuery) {
+function searchForIds(root, searchQuery) {
     const r = new RegExp(searchQuery, "g");
-    function hasMatchingCaption(name, captions) {
-        if (name.match(r))
-            return true;
-            
-        for (const caption of captions) {
-            if (caption.match(r))
-                return true;
-        }
-
-        return false;
-    }
-
-    var results = [];
     
-    for (const tableName in tables) {
-        const table = tables[tableName];
-        if (hasMatchingCaption(tableName, table.captions)) {
-            results.push({
-                table: tableName,
-                captions: table.captions,
-            })
+    var results = [];
+    function searchIds(path, node) {
+        if (typeof(node) !== "object") {
+            if (node.match && node.match(r)) {
+                results.push({
+                    id: { "path": path },
+                    "snippet": `Found on ${path}`
+                });
+            }
+
+            return;
         }
 
-        for (const columnName in table.columns) {
-            const column = table.columns[columnName];
-            if (hasMatchingCaption(columnName, column.captions)) {
-                results.push({
-                    table: tableName,
-                    column: columnName,
-                    captions: column.captions
-                });
+        var meta = node["__meta"];
+        if (meta) {
+            for (const m in meta) {
+                if (meta[m] && meta[m].match && meta[m].match(r)) {
+                    results.push({
+                        id: { "path": path },
+                        snippet: `${m} of ${path}`
+                    });
+                }
+            }
+        }
+
+        for (const name in node) {
+            if (name != '__meta') {
+                if (name.match(r)) {
+                    const id = { path: `${path}/${name}` };
+                    results.push({
+                        id,
+                        snippet: `Collection at ${id.path}`
+                    });
+                }
+
+                searchIds(path + '/' + name, node[name]);
             }
         }
     }
 
+    searchIds('', root);
+
     return results;
 }
 
-function suggestNameAndCaption(id, descriptor, r, name, captions) {
-    var results = captions
-        .filter(c => c.match(r))
-        .map(c => ({query: c, caption: `Caption of ${descriptor} ${friendlyId(id)}`}));
-
-    if (name.match(r))
-        results.push({query: name, caption: `Name of ${descriptor} ${friendlyId(id)}`});
+const searchForSuggestions = (function() {
+    function buildWords(root) {
+        var wordMatches = JSON.stringify(root).matchAll(/\w+/g);
+        var results = new Set();
     
-    return results;
-}
-
-function searchForSuggestions(tables, searchQuery) {
-    const r = new RegExp(searchQuery, "gi");
+        for (const word of wordMatches)
+            results.add(word[0]);
     
-    var results = []
-    for (const tableName in tables) {
-        const table = tables[tableName];
-        var tableSuggestions = suggestNameAndCaption({table: tableName}, 'table', r, tableName, table.captions);
-        results = results.concat(tableSuggestions);
-
-        for (const columnName in table.columns) {
-            const column = table.columns[columnName];
-            var columnSuggestions = suggestNameAndCaption({table: tableName, columns: columnName}, 'column', r, columnName, column.captions);
-            results = results.concat(columnSuggestions);
-        }
+        results.delete("__meta");
+        results.delete("caption");
+    
+        return [...results];
     }
 
-    return results;
-}
+    var __words = null;
+    return function(root, text, max=20) {
+        var results = [];
+        var r = new RegExp(text, "gi");
+        var words = __words ?? (__words = buildWords(root));
+        for (const w of words) {
+            if (w.match(r)) {
+                results.push(w)
+                if (results.length >= max) {
+                    return results;
+                }
+            }
+        }
 
-function friendlyId(id) {
-    if (!id) return "";
-    if (id.table && id.column) return `tables/${id.table}/columns/${id.column}`;
-    if (id.table) return `tables/${id.table}`;
-}
+        return results;
+    }
+})();
 
 export default {
-    friendlyId,
-
     searchSuggestions(text) {
         if (!__referenceMetaData)
             return [];
 
-        return searchForSuggestions(__referenceMetaData.tables, text)
+        return searchForSuggestions(__referenceMetaData, text)
     },
 
     searchResults(text) {
         if (!__referenceMetaData)
             return [];
 
-        return searchForIds(__referenceMetaData.tables, text);
+        return searchForIds(__referenceMetaData, text);
     },
 
     fetchReferenceMetadata() {
@@ -111,16 +113,7 @@ export default {
             return new Promise((g, b) => b("Null id"));
         }
 
-        if (id.table && id.column) {
-            return fetch(`/reference/tables/${id.table}/columns/${id.column}.md`)
+        return fetch(`/reference/${id.path}/self.md`)
                 .then(r => r.text());
-        }
-
-        if (id.table) {
-            return fetch(`/reference/tables/${id.table}/self.md`)
-                .then(r => r.text());
-        }
-
-        return new Promise((g, b) => b("Bad id"));
-    }
+    },
 }

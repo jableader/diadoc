@@ -1,9 +1,12 @@
 <template>
     <div>
-        <ul class="primary">
+        <div v-if="!searchResults || !searchResults.length" style="padding-top: 2ex; font-style: italic">
+            Sorry, no content was found for your search.
+        </div>
+        <ul class="primary" v-if="searchResults">
             <li v-for="item in searchResults" 
                 :key="item"
-                @click="resultSelected(item)">
+                @click="$emit('item-selected', item.id)">
 
                 <search-result :item="item"/>
             </li>
@@ -19,20 +22,11 @@ export default {
         SearchResult
     },
     props: {
-        selectedItem: {
-            type: [Object, null],
-            required: true
-        },
         searchResults: {
             type: [Object],
             required: true
         }
     },
-    methods: {
-        resultSelected(result) {
-            this.$emit('item-selected', result);
-        }
-    }
 }
 </script>
 

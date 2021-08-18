@@ -1,1 +1,0 @@
-This is a town or province, such as "Waterloo"

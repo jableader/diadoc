@@ -1,15 +1,11 @@
 <template>
     <div>
-        <h1> {{ item.table }} {{ item.column ? (' - ' + item.column) : ''}} </h1>
-        <h2>{{ path }}</h2>
-        <h3 v-if="item.captions">
-            {{ item.captions.join(", " )}}
-        </h3>
+        <h3>{{ item.id.path }}</h3>
+        <h2>{{ item.snippet }}</h2>
     </div>
 </template>
 
 <script>
-import data from '@/data.js'
 
 export default {
     props: {
@@ -18,11 +14,6 @@ export default {
             required: true
         }
     },
-    data: function() {
-        return {
-            path: data.friendlyId(this.item)
-        }
-    }
 }
 </script>
 

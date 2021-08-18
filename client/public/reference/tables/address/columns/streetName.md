@@ -1,1 +1,0 @@
-This is a street name, for example "Cope Street"

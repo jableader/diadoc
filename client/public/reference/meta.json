@@ -1,65 +1,42 @@
 {
-	"tables":{
-		"address":{
-			"captions":[
-				"Address",
-				"address",
-				"Residential Address"
-			],
-			"columns":{
-				"houseNumber":{
-					"type": {
-						"name":"int"
-					},
-					"captions":[
-						"House Number"
-					]
-				},
-				"streetName":{
-					"type":{
-						"name":"string"
-					},
-					"captions":[
-						"Street Address",
-						"Address 1"
-					]
-				},
-				"town":{
-					"type":{
-						"name":"string"
-					},
-					"captions":[
-						"Town"
-					]
-				}
-			}
-		},
-		"person":{
-			"captions":[
-				"Person",
-				"Member",
-				"Staff"
-			],
-			"columns":{
-				"address":{
-					"type":{
-						"name":"link",
-						"to":"address"
-					},
-					"captions":[
-						"Address"
-					]
-				},
-				"name":{
-					"type":{
-						"name":"string"
-					},
-					"captions":[
-						"Full Name",
-						"Name"
-					]
-				}
-			}
-		}
-	}
+    "address": {
+        "__meta": {
+            "shape": "uml",
+            "caption": "Address"
+        },
+        "houseNumber": {
+            "__meta": {
+                "caption": "int: HouseNumber"
+            }
+        },
+        "streetName":{
+            "__meta":{
+                "caption": "string: streetName"
+            }
+        },
+        "town":{
+            "__meta":{
+                "caption": "string: town"
+            }
+        }
+    },
+    "person":{
+        "__meta": {
+            "shape": "uml",
+            "caption": "Person"
+        },
+        "address":{
+            "__meta":{
+                "caption": "link: address",
+                "link": {
+                    "to": "/address"
+                }
+            }
+        },
+        "name":{
+            "__meta":{
+                "caption": "string: name"
+            }
+        }
+    }
 }
