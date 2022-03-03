@@ -1,14 +1,13 @@
 <template>
-	<joint-paper
+	<svg-layout
         ref="jointWrapper"
-        :selected-cell="selectedCell"
+        :shapes="shapes"
         @select-requested="requestSelect"
         @init="build" />
-
 </template>
 
 <script>
-import JointPaper from './joint-paper.vue'
+import SvgLayout from './svg-layout.vue'
 import Graph from '@/graph.js';
 
 const shapeColor = 'rgba(176, 178, 230, 0.2)';
@@ -90,7 +89,7 @@ function findNearestJointJs(shapes, id) {
 export default {
   name: 'Graph',
   components: {
-    'joint-paper': JointPaper
+    'svg-layout': SvgLayout
   },
   props: {
       reference: {
@@ -115,7 +114,39 @@ export default {
   },
   data(){
     return {
-        selectedCell: null
+        selectedCell: null,
+        shapes: [
+          { 
+            label: 'Test',
+            x: 100,
+            y: 100,
+            width: 100,
+            height: 100,
+            fill: '#BBBBFF',
+            stroke: '#4444FF',
+            strokeWidth: '1',
+            children: [{ 
+              label: 'Test',
+              x: 0,
+              y: 30,
+              width: 100,
+              height: 30,
+              fill: '#BBBBFF',
+              stroke: '#4444FF',
+              strokeWidth: '1'
+            }
+          ]},
+          { 
+            label: 'Test',
+            x: 200,
+            y: 200,
+            width: 100,
+            height: 100,
+            fill: '#BBBBFF',
+            stroke: '#4444FF',
+            strokeWidth: '1'
+          },
+        ]
     }
   },
   methods: {
@@ -155,7 +186,6 @@ export default {
         );
 
         relations.forEach(r => graph.addCell(r));
-        this.shapes = shapes;
     },
 
     idFromCell(cell) {
