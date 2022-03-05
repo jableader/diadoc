@@ -113,6 +113,10 @@ export default {
     }
   },
   data(){
+    const fill = '#BBBBFF';
+    const stroke = '#625ad8';
+    const strokeWidth = 1;
+    const fillOpacity = 0.5;
     return {
         selectedCell: null,
         shapes: [
@@ -123,9 +127,7 @@ export default {
             y: 0,
             width: 50,
             height: 50,
-            fill: '#BBBBFF',
-            stroke: '#4444FF',
-            strokeWidth: 1,
+            fill, stroke, strokeWidth, fillOpacity,
             children: [{ 
               id: { path: 'first/first' },
               label: 'Test',
@@ -133,9 +135,7 @@ export default {
               y: 0,
               width: 100,
               height: 20,
-              fill: '#BBBBFF',
-              stroke: '#4444FF',
-              strokeWidth: 1
+              fill, stroke, strokeWidth, fillOpacity,
             }]
           },
           { 
@@ -145,29 +145,32 @@ export default {
             y: 60,
             width: 80,
             height: 40,
-            fill: '#BBBBFF',
-            stroke: '#4444FF',
-            strokeWidth: 1,
+            fill, stroke, strokeWidth, fillOpacity,
             children: [{ 
               id: { path: 'second/first' },
               label: 'Test',
               x: 0,
               y: 30,
               width: 100,
-              height: 20,
-              fill: '#BBBBFF',
-              stroke: '#4444FF',
-              strokeWidth: 1
+              height: 50,
+              fill, stroke, strokeWidth, fillOpacity,
+              children: [{ 
+                id: { path: 'second/first/first' },
+                label: 'Test',
+                x: 10,
+                y: 10,
+                width: 50,
+                height: 50,
+                fill, stroke, strokeWidth, fillOpacity,
+              }]
             },{ 
               id: { path: 'second/second' },
               label: 'Test',
-              x: 40,
-              y: 60,
+              x: 110,
+              y: 20,
               width: 100,
               height: 20,
-              fill: '#BBBBFF',
-              stroke: '#4444FF',
-              strokeWidth: 1
+              fill, stroke, strokeWidth, fillOpacity,
             }],
           },
         ]

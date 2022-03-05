@@ -4,6 +4,7 @@
       :width="shape.width" 
       :height="shape.height" 
       :fill="shape.fill"
+      :fill-opacity="shape.fillOpacity"
       :stroke="shape.stroke"
       :stroke-width="shape.strokeWidth" 
       @dblclick="$emit('shape-selected', shape.id)"/>

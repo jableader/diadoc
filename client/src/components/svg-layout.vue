@@ -12,9 +12,12 @@ import svgPanZoom from 'svg-pan-zoom'
 import svgBox from './svg-box.vue'
 
 function createPanAndZoom(targetElement) {
-    const panAndZoom = svgPanZoom(targetElement, { dblClickZoomEnabled: false });
+    const panAndZoom = svgPanZoom(targetElement, { 
+      dblClickZoomEnabled: false,
+      maxZoom: 100,
+      minZoom: 0.1
+    });
 
-    panAndZoom.setMinZoom(0.01);
     return panAndZoom;
 }
 
