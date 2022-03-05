@@ -1,9 +1,7 @@
 <template>
   <svg ref="canvas"
     width="100%"
-    height="100%"
-    @mousedown="startPan"
-    @mouseup="stopPan">
+    height="100%">
 
     <svg-box v-for="s in shapes" :shape="s" :key="s.id" @shape-selected="shapeSelected" />
   </svg>

@@ -121,33 +121,54 @@ export default {
             label: 'Test',
             x: 0,
             y: 0,
-            width: 20,
-            height: 20,
+            width: 50,
+            height: 50,
             fill: '#BBBBFF',
             stroke: '#4444FF',
-            strokeWidth: '1',
-            //children: [{ 
-            //  id: { path: 'first/first' },
-            //  label: 'Test',
-            //  x: 0,
-            //  y: 30,
-            //  width: 100,
-            //  height: 30,
-            //  fill: '#BBBBFF',
-            //  stroke: '#4444FF',
-            //  strokeWidth: '1'
-            //}]
+            strokeWidth: 1,
+            children: [{ 
+              id: { path: 'first/first' },
+              label: 'Test',
+              x: 0,
+              y: 0,
+              width: 100,
+              height: 20,
+              fill: '#BBBBFF',
+              stroke: '#4444FF',
+              strokeWidth: 1
+            }]
           },
           { 
             id: { path: 'second' },
-            label: 'Test',
-            x: 40,
-            y: 40,
-            width: 30,
-            height: 30,
+            label: 'A really really really long label',
+            x: 60,
+            y: 60,
+            width: 80,
+            height: 40,
             fill: '#BBBBFF',
             stroke: '#4444FF',
-            strokeWidth: '1'
+            strokeWidth: 1,
+            children: [{ 
+              id: { path: 'second/first' },
+              label: 'Test',
+              x: 0,
+              y: 30,
+              width: 100,
+              height: 20,
+              fill: '#BBBBFF',
+              stroke: '#4444FF',
+              strokeWidth: 1
+            },{ 
+              id: { path: 'second/second' },
+              label: 'Test',
+              x: 40,
+              y: 60,
+              width: 100,
+              height: 20,
+              fill: '#BBBBFF',
+              stroke: '#4444FF',
+              strokeWidth: 1
+            }],
           },
         ]
     }
