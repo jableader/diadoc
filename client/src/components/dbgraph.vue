@@ -2,7 +2,7 @@
 	<svg-layout
         ref="jointWrapper"
         :shapes="shapes"
-        @select-requested="requestSelect"
+        @shape-selected="requestSelect"
         @init="build" />
 </template>
 
@@ -117,31 +117,34 @@ export default {
         selectedCell: null,
         shapes: [
           { 
+            id: { path: 'first' },
             label: 'Test',
-            x: 100,
-            y: 100,
-            width: 100,
-            height: 100,
+            x: 0,
+            y: 0,
+            width: 20,
+            height: 20,
             fill: '#BBBBFF',
             stroke: '#4444FF',
             strokeWidth: '1',
-            children: [{ 
-              label: 'Test',
-              x: 0,
-              y: 30,
-              width: 100,
-              height: 30,
-              fill: '#BBBBFF',
-              stroke: '#4444FF',
-              strokeWidth: '1'
-            }
-          ]},
+            //children: [{ 
+            //  id: { path: 'first/first' },
+            //  label: 'Test',
+            //  x: 0,
+            //  y: 30,
+            //  width: 100,
+            //  height: 30,
+            //  fill: '#BBBBFF',
+            //  stroke: '#4444FF',
+            //  strokeWidth: '1'
+            //}]
+          },
           { 
+            id: { path: 'second' },
             label: 'Test',
-            x: 200,
-            y: 200,
-            width: 100,
-            height: 100,
+            x: 40,
+            y: 40,
+            width: 30,
+            height: 30,
             fill: '#BBBBFF',
             stroke: '#4444FF',
             strokeWidth: '1'
@@ -203,10 +206,12 @@ export default {
             return;
         }
 
-        const id = this.idFromCell(item);
-        if (id) {
-            this.$emit('reference-requested', id);
-        }
+        console.log(item)
+
+        //const id = this.idFromCell(item);
+        //if (id) {
+        //    this.$emit('reference-requested', id);
+        //}
     }
   }
 }

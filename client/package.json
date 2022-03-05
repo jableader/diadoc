@@ -37,7 +37,8 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "no-unused-labels": "off"
+      "no-unused-labels": "off",
+      "no-unused-vars": "off"
     }
   },
   "browserslist": [

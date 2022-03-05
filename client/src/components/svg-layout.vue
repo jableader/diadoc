@@ -3,53 +3,25 @@
     width="100%"
     height="100%"
     @mousedown="startPan"
-    @mouseup="stopPan"
-    v-html="content" />
+    @mouseup="stopPan">
+
+    <svg-box v-for="s in shapes" :shape="s" :key="s.id" @shape-selected="shapeSelected" />
+  </svg>
 </template>
 
 <script>
 import svgPanZoom from 'svg-pan-zoom'
+import svgBox from './svg-box.vue'
 
 function createPanAndZoom(targetElement) {
-    const panAndZoom = svgPanZoom(targetElement, 
-    {
-        panEnabled: false,
-        dblClickZoomEnabled: false,
-    });
+    const panAndZoom = svgPanZoom(targetElement, { dblClickZoomEnabled: false });
 
-    panAndZoom.setMinZoom(0.1);
+    panAndZoom.setMinZoom(0.01);
     return panAndZoom;
 }
 
-function renderShape(shape) {
-  let inner = ''
-  if (shape.children) {
-    for (let c of shape.children) {
-      inner += renderShape(c);
-    }
-  }
-
-  return `
-    <svg x="${shape.x}" y="${shape.y}">
-      <rect width="${shape.width}" height="${shape.height}" fill="${shape.fill}" stroke="${shape.stroke}" stroke-width="${shape.strokeWidth}" />
-      <text x="5" y="20" fill="black">${shape.label}</text>
-      <g>
-        ${inner}
-      </g>
-    </svg>
-    `
-}
-
-function renderSvg(shapes) {
-  let svg = '';
-  for (let c of shapes) {
-    svg += renderShape(c);
-  }
-
-  return `<g>${svg}</g>`;
-}
-
 export default {
+  components: { svgBox },
   props: {
       shapes: {
           type: [Object, null], // Graph of items
@@ -61,23 +33,13 @@ export default {
       },
   },
 
-  data: function() {
-    return {
-      content: renderSvg(this.shapes)
-    }
-  },
-
   mounted: function() {
     this.panAndZoom = createPanAndZoom(this.$refs['canvas']);
   },
 
   methods: {
-    startPan: function() {
-      this.panAndZoom.enablePan();
-    },
-
-    stopPan: function() {
-      this.panAndZoom.disablePan();
+    shapeSelected(id) {
+      this.$emit('shape-selected', id);
     }
   }
 }
