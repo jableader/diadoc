@@ -9,6 +9,7 @@
 <script>
 import SvgLayout from './svg-layout.vue'
 import Graph from '@/graph.js';
+import Layout from '@/layout.js';
 
 const shapeColor = 'rgba(176, 178, 230, 0.2)';
 const shapeStroke = 'rgba(139, 133, 255, 0.6)';
@@ -101,6 +102,9 @@ export default {
           required: false
       }
   },
+  data() {
+      return { shapes: null, selected: null };
+  },
   watch: {
     selectedReference(newValue) {
         if (newValue)
@@ -109,71 +113,7 @@ export default {
             this.selectedCell = null
     },
     reference() {
-        this.build();
-    }
-  },
-  data(){
-    const fill = '#BBBBFF';
-    const stroke = '#625ad8';
-    const strokeWidth = 1;
-    const fillOpacity = 0.5;
-    return {
-        selectedCell: null,
-        shapes: [
-          { 
-            id: { path: 'first' },
-            label: 'Test',
-            x: 0,
-            y: 0,
-            width: 50,
-            height: 50,
-            fill, stroke, strokeWidth, fillOpacity,
-            children: [{ 
-              id: { path: 'first/first' },
-              label: 'Test',
-              x: 0,
-              y: 0,
-              width: 100,
-              height: 20,
-              fill, stroke, strokeWidth, fillOpacity,
-            }]
-          },
-          { 
-            id: { path: 'second' },
-            label: 'A really really really long label',
-            x: 60,
-            y: 60,
-            width: 80,
-            height: 40,
-            fill, stroke, strokeWidth, fillOpacity,
-            children: [{ 
-              id: { path: 'second/first' },
-              label: 'Test',
-              x: 0,
-              y: 30,
-              width: 100,
-              height: 50,
-              fill, stroke, strokeWidth, fillOpacity,
-              children: [{ 
-                id: { path: 'second/first/first' },
-                label: 'Test',
-                x: 10,
-                y: 10,
-                width: 50,
-                height: 50,
-                fill, stroke, strokeWidth, fillOpacity,
-              }]
-            },{ 
-              id: { path: 'second/second' },
-              label: 'Test',
-              x: 110,
-              y: 20,
-              width: 100,
-              height: 20,
-              fill, stroke, strokeWidth, fillOpacity,
-            }],
-          },
-        ]
+        this.shapes = this.reference ? Layout.shapes(Graph.idForPath(''), this.reference).children : null;
     }
   },
   methods: {
@@ -225,17 +165,11 @@ export default {
         return null;
     },
 
-    requestSelect(item) {
-        if (!item) {
+    requestSelect(id) {
+        if (!id) {
             return;
         }
-
-        console.log(item)
-
-        //const id = this.idFromCell(item);
-        //if (id) {
-        //    this.$emit('reference-requested', id);
-        //}
+        this.$emit('reference-requested', id);
     }
   }
 }

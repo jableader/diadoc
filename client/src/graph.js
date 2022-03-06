@@ -1,7 +1,6 @@
 export default {
-        
     pathForId(id) {
-        if (!id.path) {
+        if (id.path === undefined) {
             console.log("Invalid id's path requested", id);
             return id;
         }
@@ -16,6 +15,10 @@ export default {
         }
         
         return { path };
+    },
+
+    join(root, child) {
+        return this.idForPath(this.pathForId(root) + '/' + child);
     },
 
     getNode(root, id) {

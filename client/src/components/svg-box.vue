@@ -1,28 +1,28 @@
 <template>
-  <g :transform="`translate(${this.shape.x}, ${this.shape.y})`">
+  <g :transform="`translate(${shape.box.x}, ${shape.box.y})`">
     <rect 
-      :width="shape.width" 
-      :height="shape.height" 
-      :fill="shape.fill"
-      :fill-opacity="shape.fillOpacity"
-      :stroke="shape.stroke"
-      :stroke-width="shape.strokeWidth" 
+      :width="shape.box.w" 
+      :height="shape.box.h" 
+      :fill="shape.style.fill"
+      :fill-opacity="shape.style.fillOpacity"
+      :stroke="shape.style.stroke"
+      :stroke-width="shape.style.strokeWidth" 
       @dblclick="$emit('shape-selected', shape.id)"/>
 
     <text 
       :x="5"
-      :y="sizing.label.h * 0.8"
-      :transform="`scale(${sizing.label.scale}, ${sizing.label.scale})`"
+      :y="shape.label.box.h * 0.8"
+      :transform="`scale(${shape.label.scale}, ${shape.label.scale})`"
       fill="black"
-      >{{shape.label}}</text>
+      >{{shape.label.text}}</text>
 
     <line v-if="shape.children"
-      x1="0" :x2="shape.width" :y1="sizing.label.bottom + shape.strokeWidth" :y2="sizing.label.bottom + shape.strokeWidth" 
-      :stroke="shape.stroke"
-      :stroke-width="shape.strokeWidth" />
+      x1="0" :x2="shape.width" :y1="shape.label.bottom + shape.style.strokeWidth" :y2="shape.label.bottom + shape.style.strokeWidth" 
+      :stroke="shape.style.stroke"
+      :stroke-width="shape.style.strokeWidth" />
 
-    <g v-if="shape.children" :transform="`translate(${sizing.child.x}, ${sizing.child.y})`">
-      <g :transform="`scale(${sizing.child.scale}, ${sizing.child.scale})`">
+    <g v-if="shape.children" :transform="`translate(${shape.style.strokeWidth}, ${shape.label.bottom + shape.style.strokeWidth})`">
+      <g>
         <svg-box 
           v-for="s in shape.children" 
           :key="s.id.path" 
@@ -34,14 +34,9 @@
 </template>
 
 <script>
-import Layout from '@/layout'
-
 export default {
   props: {
     shape: [Object]
-  },
-  data() {
-    return { sizing: Layout.sizing(this.shape) };
   },
   methods: {
     shapeSelected(id) {

@@ -1,48 +1,61 @@
-const paddingChar = 'x'; // For label sizing, it looks much better if we slightly overprovision
-const font = 'Avenir, Helvetica, Arial, sans-serif';
-const fontSize = 'medium';
+import Shapes from '@/shape.js';
+import Measure from '@/measure.js';
+import Graph from '@/graph.js'
 
-const sizeCache = {};
-function measure(s) {
-  if (sizeCache[s])
-    return sizeCache[s];
+const metaKey = '__meta';
+const padding = 5;
 
-  var div = document.createElement('div');
-  div.style.position = 'absolute';
-  div.style.visibility = 'hidden';
-  div.style.height = 'auto';
-  div.style.width = 'auto';
-  div.style.padding = "0";
-  div.style.whiteSpace = 'nowrap';
-  div.style.fontFamily = font;
-  div.style.fontSize = fontSize;
-  div.style.border = "1px solid blue"; // for convenience when visible
-
-  div.innerHTML = s;
-  document.body.appendChild(div);
-  
-  var clientWidth = div.clientWidth;
-  var clientHeight = div.clientHeight;
-  
-  document.body.removeChild(div);
-  
-  let result = {w: clientWidth, h: clientHeight};
-  sizeCache[s] = result;
-  return result;
-}
-
-function sizing(shape) {
-  let labelSize = measure(shape.label + paddingChar, font, fontSize);
-  let availableW = shape.width - shape.strokeWidth * 2;
-  let labelScale = (availableW < labelSize.w) ? availableW / labelSize.w : 1;
-  let labelBottom = labelSize.h * labelScale;
-  let availableH = shape.height - labelBottom - shape.strokeWidth;
-  let childScale = Math.min(availableW/100, availableH/100);
-
-  return {
-    label: { h: labelSize.h, w: labelSize.w, scale: labelScale, bottom: labelBottom }, 
-    child: { h: availableH, w: availableW, scale: childScale, y: labelBottom + shape.strokeWidth*1.5, x: shape.strokeWidth/2 },
+function randomxy(id, ref, label, children) {
+  const viewbox = ref[metaKey].viewbox ?? {
+    w: children.reduce((w, c) => w + c.box.w, 0) + padding * children.length,
+    h: children.reduce((h, c) => h + c.box.h, 0) + padding * children.length
   }
+
+  for (const c of children) {
+    c.box.x = Math.random() * (viewbox.w - c.box.w);
+    c.box.y = Math.random() * (viewbox.h - c.box.h);
+  }
+
+  return new Shapes.Shape(id, label, Shapes.Box(0, 0, viewbox.w, viewbox.h), children, ref[metaKey].style);
 }
 
-export default {measure, sizing}
+function stack(id, ref, label, children) {
+  const shapeWidth = children.reduce((w, c) => Math.max(w, c.box.w), 0);
+
+  let lastY = 0;
+  for (const c of children) {
+    c.box.x = 0;
+    c.box.y = lastY;
+    c.box.w = shapeWidth;
+    lastY += c.box.h;
+  }
+
+  return new Shapes.Shape(id, label, Shapes.Box(0, 0, Math.max(shapeWidth, label.box.w), label.box.h + lastY), children, ref[metaKey].style);
+}
+
+function toLabel(text, viewport) {
+  const size = Measure.text(text);
+  const scale = (viewport && viewport.w < size.w) ? viewport.w / size.w : 1;
+
+  return new Shapes.Label(text, size, scale);
+}
+
+var layouts = { stack, randomxy };
+function shapes(id, ref) {
+  let meta = ref[metaKey];
+  let children = [];
+  for (var key in ref) {
+    if (key == metaKey)
+      continue;
+
+    children.push(shapes(Graph.join(id, key), ref[key]));
+  }
+
+  const label = toLabel(meta.caption, meta.viewport);
+  if (children.length == 0)
+    return new Shapes.Shape(id, label, label.box, children, ref.style);
+
+  return layouts[meta.layout](id, ref, label, children);
+}
+
+export default { shapes }

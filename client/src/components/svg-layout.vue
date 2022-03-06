@@ -15,7 +15,7 @@ function createPanAndZoom(targetElement) {
     const panAndZoom = svgPanZoom(targetElement, { 
       dblClickZoomEnabled: false,
       maxZoom: 100,
-      minZoom: 0.1
+      minZoom: 0.1,
     });
 
     return panAndZoom;
@@ -34,8 +34,9 @@ export default {
       },
   },
 
-  mounted: function() {
-    this.panAndZoom = createPanAndZoom(this.$refs['canvas']);
+  updated: function() {
+    if (this.shapes && !this.panAndZoom)
+      this.panAndZoom = createPanAndZoom(this.$refs['canvas']);
   },
 
   methods: {
