@@ -38,9 +38,11 @@ export default {
 
     roots(id) {
         const ids = [];
-        
+        const parts = id.path.split('/');
+        parts.shift(); // Remove empty root
+
         let visited = '';
-        for (var sub of id.path.split('/')) {
+        for (var sub of parts) {
             visited += '/' + sub;
             ids.push(this.idForPath(visited));
         }

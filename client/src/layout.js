@@ -17,22 +17,37 @@ function findChild(shapes, id) {
       return s;
   }
 
-  throw `${Graph.friendlyName(id)} not found.`;
+  throw `${Graph.friendlyId(id)} not found.`;
 }
 
 function getRootShapes(shapes, id) {
   const parents = [];
   for (const subId of Graph.roots(id)) {
-    const child = findChild(subId);
+    const child = findChild(shapes, subId);
+    parents.push(child);
+
     shapes = child.children;
   }
 
   return parents;
 }
 
-function getTrueBoundingBox(shapes, id) {
-  const parents = getRootShapes(shapes, id);
+function trueBoundingBox(shapes, id) {
+  let scale = 1, ox = 0, oy = 0;
+  const roots = getRootShapes(shapes, id);
+  const shape = roots.pop();
 
+  for (const parent of roots) {
+    ox += scale * (parent.box.x + parent.children.box.x);
+    oy += scale * (parent.box.y + parent.children.box.y);
+    scale *= parent.children.scale;
+  }
+
+  return Shapes.Box(ox + scale * shape.box.x,
+      oy + scale * shape.box.y,
+      scale * shape.box.w,
+      scale * shape.box.h
+    );
 }
 
 function randomxy(id, ref, label, childShapes) {
@@ -46,7 +61,7 @@ function randomxy(id, ref, label, childShapes) {
     c.box.y = Math.random() * (viewbox.h - c.box.h);
   }
 
-  const children = new Shapes.Children(childShapes, Shapes.Box(0, label.bottom, viewbox.w, viewbox.h));
+  const children = new Shapes.Children(childShapes, Shapes.Box(0, label.bottom, viewbox.w, viewbox.h), 1);
   return new Shapes.Shape(id, label, Shapes.Box(0, 0, viewbox.w, viewbox.h), children, style);
 }
 
@@ -99,9 +114,9 @@ function shapes(id, ref) {
 
   const label = toLabel(meta.caption, meta.viewport);
   if (childShapes.length == 0)
-    return new Shapes.Shape(id, label, label.box, childShapes, style);
+    return new Shapes.Shape(id, label, label.box, new Shapes.Children([], Shapes.Box(0,0,0,0), 1), style);
 
   return layouts[meta.layout](id, ref, label, childShapes);
 }
 
-export default { shapes }
+export default { shapes, trueBoundingBox }

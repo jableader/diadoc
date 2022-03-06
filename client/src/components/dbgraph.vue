@@ -2,6 +2,7 @@
 	<svg-layout
         ref="jointWrapper"
         :shapes="shapes"
+        :selection="selectedReference"
         @shape-selected="requestSelect"
         @init="build" />
 </template>
@@ -106,12 +107,6 @@ export default {
       return { shapes: null, selected: null };
   },
   watch: {
-    selectedReference(newValue) {
-        if (newValue)
-            this.selectedCell = findNearestJointJs(this.shapes, newValue);
-        else
-            this.selectedCell = null
-    },
     reference() {
         this.shapes = this.reference ? Layout.shapes(Graph.idForPath(''), this.reference).children : null;
     }
@@ -169,6 +164,7 @@ export default {
         if (!id) {
             return;
         }
+
         this.$emit('reference-requested', id);
     }
   }
