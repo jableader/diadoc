@@ -11,7 +11,7 @@
 
     <text 
       :x="5"
-      :y="shape.label.box.h * 0.8"
+      :y="shape.label.baseline"
       :transform="`scale(${shape.label.scale}, ${shape.label.scale})`"
       fill="black"
       >{{shape.label.text}}</text>
@@ -21,8 +21,8 @@
       :stroke="shape.style.stroke"
       :stroke-width="shape.style.strokeWidth" />
 
-    <g v-if="shape.children" :transform="`translate(${shape.style.strokeWidth}, ${shape.label.bottom + shape.style.strokeWidth})`">
-      <g :transform="`scale(${shape.childScale}, ${shape.childScale})`">
+    <g v-if="shape.children.length > 0" :transform="`translate(${shape.children.box.x}, ${shape.children.box.y})`">
+      <g :transform="`scale(${shape.children.scale}, ${shape.children.scale})`">
         <svg-box 
           v-for="s in shape.children" 
           :key="s.id.path" 

@@ -25,6 +25,29 @@ export default {
         return id.path.substring(1).split('/').reduce((l, r) => l[r], root)
     },
 
+    getParent(id) {
+        if (id.path == '')
+            return null;
+
+        return this.idForPath(id.path.slice(0, id.path.lastIndexOf('/')));
+    },
+
+    eq(a, b) {
+        return a.path == b.path;
+    },
+
+    roots(id) {
+        const ids = [];
+        
+        let visited = '';
+        for (var sub of id.path.split('/')) {
+            visited += '/' + sub;
+            ids.push(this.idForPath(visited));
+        }
+
+        return ids;
+    },
+
     getRelated(root, id) {
         if (!id) {
             return []

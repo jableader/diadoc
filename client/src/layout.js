@@ -4,37 +4,79 @@ import Graph from '@/graph.js'
 
 const metaKey = '__meta';
 const padding = 5.0;
+const style = {
+  fill: '#BBBBFF',
+  stroke: '#625ad8',
+  strokeWidth: 1,
+  fillOpacity: 0.5,
+};
 
-function randomxy(id, ref, label, children) {
-  const viewbox = ref[metaKey].viewbox ?? {
-    w: children.reduce((w, c) => w + c.box.w, 0) + padding * children.length,
-    h: children.reduce((h, c) => h + c.box.h, 0) + padding * children.length
+function findChild(shapes, id) {
+  for (const s of shapes) {
+    if (Graph.eq(s.id, id))
+      return s;
   }
 
-  for (const c of children) {
+  throw `${Graph.friendlyName(id)} not found.`;
+}
+
+function getRootShapes(shapes, id) {
+  const parents = [];
+  for (const subId of Graph.roots(id)) {
+    const child = findChild(subId);
+    shapes = child.children;
+  }
+
+  return parents;
+}
+
+function getTrueBoundingBox(shapes, id) {
+  const parents = getRootShapes(shapes, id);
+
+}
+
+function randomxy(id, ref, label, childShapes) {
+  const viewbox = ref[metaKey].viewbox ?? {
+    w: childShapes.reduce((w, c) => w + c.box.w, 0) + padding * childShapes.length,
+    h: childShapes.reduce((h, c) => h + c.box.h, 0) + padding * childShapes.length
+  }
+
+  for (const c of childShapes) {
     c.box.x = Math.random() * (viewbox.w - c.box.w);
     c.box.y = Math.random() * (viewbox.h - c.box.h);
   }
 
-  return new Shapes.Shape(id, label, Shapes.Box(0, 0, viewbox.w, viewbox.h), children, ref[metaKey].style);
+  const children = new Shapes.Children(childShapes, Shapes.Box(0, label.bottom, viewbox.w, viewbox.h));
+  return new Shapes.Shape(id, label, Shapes.Box(0, 0, viewbox.w, viewbox.h), children, style);
 }
 
-function stack(id, ref, label, children) {
-  const innerWidth = children.reduce((w, c) => Math.max(w, c.box.w), 0);
+function stack(id, ref, label, childShapes) {
+  const innerWidth = childShapes.reduce((w, c) => Math.max(w, c.box.w), 0);
   const childWidth = (ref[metaKey].viewbox?.w ?? innerWidth);
   const scale = childWidth / innerWidth;
   
   let lastY = 0;
-  for (const c of children) {
-    c.box.x = padding / scale;
+  for (const c of childShapes) {
+    c.box.x = 0;
     c.box.y = lastY;
     c.box.w = innerWidth;
     lastY += c.box.h;
   }
-  
-  const shapeWidth = Math.max(label.box.w, childWidth + 2 * padding);
-  const shapeHeight = label.box.h + (lastY * scale) + padding;
-  return new Shapes.Shape(id, label, Shapes.Box(0, 0, shapeWidth, shapeHeight), children, scale, ref[metaKey].style);
+
+  const childBox = Shapes.Box(
+    padding,
+    label.bottom,
+    childWidth,
+    lastY * scale
+  );
+
+  const shapeBox = Shapes.Box(0, 0,
+    Math.max(label.box.w, childBox.w + 2 * padding),
+    label.box.h + childBox.h + padding,
+  );
+
+  const children = new Shapes.Children(childShapes, childBox, scale);
+  return new Shapes.Shape(id, label, shapeBox, children, style);
 }
 
 function toLabel(text, viewport) {
@@ -46,20 +88,20 @@ function toLabel(text, viewport) {
 
 var layouts = { stack, randomxy };
 function shapes(id, ref) {
-  let meta = ref[metaKey];
-  let children = [];
+  const meta = ref[metaKey];
+  const childShapes = [];
   for (var key in ref) {
     if (key == metaKey)
       continue;
 
-    children.push(shapes(Graph.join(id, key), ref[key]));
+    childShapes.push(shapes(Graph.join(id, key), ref[key]));
   }
 
   const label = toLabel(meta.caption, meta.viewport);
-  if (children.length == 0)
-    return new Shapes.Shape(id, label, label.box, children, 1, ref.style);
+  if (childShapes.length == 0)
+    return new Shapes.Shape(id, label, label.box, childShapes, style);
 
-  return layouts[meta.layout](id, ref, label, children);
+  return layouts[meta.layout](id, ref, label, childShapes);
 }
 
 export default { shapes }
