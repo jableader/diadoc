@@ -1,4 +1,4 @@
-const paddingChar = 'x'; // For label sizing, it looks much better if we slightly overprovision
+const paddingChar = 'xgP'; // For label sizing, it looks much better if we slightly overprovision
 const font = 'Avenir, Helvetica, Arial, sans-serif';
 const fontSize = 'medium';
 

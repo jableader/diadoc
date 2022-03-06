@@ -22,7 +22,7 @@
       :stroke-width="shape.style.strokeWidth" />
 
     <g v-if="shape.children" :transform="`translate(${shape.style.strokeWidth}, ${shape.label.bottom + shape.style.strokeWidth})`">
-      <g>
+      <g :transform="`scale(${shape.childScale}, ${shape.childScale})`">
         <svg-box 
           v-for="s in shape.children" 
           :key="s.id.path" 

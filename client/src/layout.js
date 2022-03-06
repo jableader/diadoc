@@ -3,7 +3,7 @@ import Measure from '@/measure.js';
 import Graph from '@/graph.js'
 
 const metaKey = '__meta';
-const padding = 5;
+const padding = 5.0;
 
 function randomxy(id, ref, label, children) {
   const viewbox = ref[metaKey].viewbox ?? {
@@ -20,17 +20,21 @@ function randomxy(id, ref, label, children) {
 }
 
 function stack(id, ref, label, children) {
-  const shapeWidth = children.reduce((w, c) => Math.max(w, c.box.w), 0);
-
+  const innerWidth = children.reduce((w, c) => Math.max(w, c.box.w), 0);
+  const childWidth = (ref[metaKey].viewbox?.w ?? innerWidth);
+  const scale = childWidth / innerWidth;
+  
   let lastY = 0;
   for (const c of children) {
-    c.box.x = 0;
+    c.box.x = padding / scale;
     c.box.y = lastY;
-    c.box.w = shapeWidth;
+    c.box.w = innerWidth;
     lastY += c.box.h;
   }
-
-  return new Shapes.Shape(id, label, Shapes.Box(0, 0, Math.max(shapeWidth, label.box.w), label.box.h + lastY), children, ref[metaKey].style);
+  
+  const shapeWidth = Math.max(label.box.w, childWidth + 2 * padding);
+  const shapeHeight = label.box.h + (lastY * scale) + padding;
+  return new Shapes.Shape(id, label, Shapes.Box(0, 0, shapeWidth, shapeHeight), children, scale, ref[metaKey].style);
 }
 
 function toLabel(text, viewport) {
@@ -53,7 +57,7 @@ function shapes(id, ref) {
 
   const label = toLabel(meta.caption, meta.viewport);
   if (children.length == 0)
-    return new Shapes.Shape(id, label, label.box, children, ref.style);
+    return new Shapes.Shape(id, label, label.box, children, 1, ref.style);
 
   return layouts[meta.layout](id, ref, label, children);
 }

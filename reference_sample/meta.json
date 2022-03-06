@@ -1,12 +1,12 @@
 {
     "__meta": {
         "layout": "randomxy",
-        "viewbox": { "w": 1000, "h" : 600 }
+        "viewbox": { "w": 700, "h" : 600 }
     },
     "address": {
         "__meta": {
             "layout": "stack",
-            "maxWidth": 300,
+            "viewbox": { "w": 100 },
             "caption": "Address"
         },
         "houseNumber": {

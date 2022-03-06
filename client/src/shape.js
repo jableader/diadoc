@@ -24,13 +24,14 @@ class Label {
 }
 
 class Shape {
-    constructor(id, label, box, children, _style) {
+    constructor(id, label, box, children, childScale, _style) {
       this.id = id;
       this.label = label;
       this.style = style;
       this.box = box;
       
       this.children = children;
+      this.childScale = childScale;
     }
 }
 
