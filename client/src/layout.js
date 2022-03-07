@@ -32,10 +32,8 @@ function getRootShapes(shapes, id) {
   return parents;
 }
 
-function trueBoundingBox(shapes, id) {
+function realTranslator(roots) {
   let scale = 1, ox = 0, oy = 0;
-  const roots = getRootShapes(shapes, id);
-  const shape = roots.pop();
 
   for (const parent of roots) {
     ox += scale * (parent.box.x + parent.children.box.x);
@@ -43,11 +41,41 @@ function trueBoundingBox(shapes, id) {
     scale *= parent.children.scale;
   }
 
-  return Shapes.Box(ox + scale * shape.box.x,
-      oy + scale * shape.box.y,
-      scale * shape.box.w,
-      scale * shape.box.h
-    );
+  return (box) => Shapes.Box(ox + scale * box.x,
+    oy + scale * box.y,
+    scale * box.w,
+    scale * box.h
+  );
+}
+
+function trueBoundingBox(shapes, id) {
+  const roots = getRootShapes(shapes, id);
+  const shape = roots.pop();
+
+  return realTranslator(roots)(shape.box);
+}
+
+function truePorts(shapes, id) {
+  const roots = getRootShapes(shapes, id);
+  const shape = roots.pop();
+
+  return shape.ports.map(realTranslator(roots));
+}
+
+function closestPorts(shapes, idA, idB) {
+  const sq = (x) => x * x;
+
+  // Closest by euclids
+  let closest = {distance: Number.MAX_VALUE};
+  for (const p1 of truePorts(shapes, idA)) {
+    for (const p2 of truePorts(shapes, idB)) {
+      const distance = sq(p1.x - p2.x) + sq(p1.y - p2.y);
+      if (distance < closest.distance)
+        closest = {p1, p2, distance}
+    }
+  }
+
+  return closest;
 }
 
 function randomxy(id, ref, label, childShapes) {
@@ -72,6 +100,8 @@ function stack(id, ref, label, childShapes) {
   
   let lastY = 0;
   for (const c of childShapes) {
+    c.allowedPorts = ['left', 'right'];
+
     c.box.x = 0;
     c.box.y = lastY;
     c.box.w = innerWidth;
@@ -119,4 +149,4 @@ function shapes(id, ref) {
   return layouts[meta.layout](id, ref, label, childShapes);
 }
 
-export default { shapes, trueBoundingBox }
+export default { shapes, trueBoundingBox, closestPorts }

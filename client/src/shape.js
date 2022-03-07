@@ -44,8 +44,23 @@ class Shape {
       this.label = label;
       this.style = style;
       this.box = box;
-      
       this.children = children;
+      this.allowedPorts = ['top', 'bottom', 'left', 'right'];
+    }
+
+    get ports() {
+        const {x, y, w, h} = this.box;
+        const xMid = x + w / 2;
+        const yMid = y + h / 2;
+
+        return this.allowedPorts.map(function (type) {
+            switch (type) {
+                case 'top': return { 'x': xMid, 'y': y };
+                case 'bottom': return { 'x': xMid, 'y': y + h };
+                case 'left': return { 'x': x, 'y': yMid };
+                case 'right': return { 'x': x + w, 'y': yMid / 2 };
+            }
+        });
     }
 }
 

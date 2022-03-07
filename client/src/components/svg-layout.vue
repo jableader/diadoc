@@ -9,6 +9,11 @@
         <!-- Debug helper - show bounding boxes
         <rect v-for="b in bboxes" :key="b" :x="b.x" :y="b.y" :width="b.w" :height="b.h" fill-opacity="0" stroke="#FF0000" strokeWidth="0.5" />
         -->
+      <g>
+        <line v-for="link in links" :key="link"
+          :x1="link.p1.x" :x2="link.p2.x" :y1="link.p1.y" :y2="link.p2.y"
+          stroke="black" strokeWidth="1" strokeOpacity="0.5"/>
+      </g>
     </g>
   </svg>
 </template>
@@ -62,7 +67,7 @@ function centerElement(box, panAndZoom){
       x: calcCenter(box.x, box.w, realZoom, width), 
       y: calcCenter(box.y, box.h, realZoom, height)
     });
-    
+
     const dz = Math.min((viewBox.width / box.w), (viewBox.height / box.h)) * 0.8;
     panAndZoom.zoomAtPoint(dz, {x: width / 2, y: height / 2});
 }
@@ -73,6 +78,9 @@ export default {
       shapes: {
           type: [Object, null], // Graph of items
           required: true
+      },
+      links: {
+        type: [Array, null],
       },
       selection: {
           type: Object, // ID
