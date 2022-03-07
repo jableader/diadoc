@@ -1,7 +1,6 @@
 export default {
-        
     pathForId(id) {
-        if (!id.path) {
+        if (id.path === undefined) {
             console.log("Invalid id's path requested", id);
             return id;
         }
@@ -18,8 +17,37 @@ export default {
         return { path };
     },
 
+    join(root, child) {
+        return this.idForPath(this.pathForId(root) + '/' + child);
+    },
+
     getNode(root, id) {
         return id.path.substring(1).split('/').reduce((l, r) => l[r], root)
+    },
+
+    getParent(id) {
+        if (id.path == '')
+            return null;
+
+        return this.idForPath(id.path.slice(0, id.path.lastIndexOf('/')));
+    },
+
+    eq(a, b) {
+        return a.path == b.path;
+    },
+
+    roots(id) {
+        const ids = [];
+        const parts = id.path.split('/');
+        parts.shift(); // Remove empty root
+
+        let visited = '';
+        for (var sub of parts) {
+            visited += '/' + sub;
+            ids.push(this.idForPath(visited));
+        }
+
+        return ids;
     },
 
     getRelated(root, id) {

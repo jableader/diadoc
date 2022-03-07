@@ -1,7 +1,12 @@
 {
+    "__meta": {
+        "layout": "randomxy",
+        "viewbox": { "w": 700, "h" : 600 }
+    },
     "address": {
         "__meta": {
-            "shape": "uml",
+            "layout": "stack",
+            "viewbox": { "w": 100 },
             "caption": "Address"
         },
         "houseNumber": {
@@ -22,7 +27,7 @@
     },
     "person":{
         "__meta": {
-            "shape": "uml",
+            "layout": "stack",
             "caption": "Person"
         },
         "address":{

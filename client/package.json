@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "jointjs": "^3.4.0",
     "jquery": "^3.6.0",
     "svg-pan-zoom": "^3.6.1",
     "vue": "^3.0.0",
@@ -36,7 +35,10 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "no-unused-labels": "off",
+      "no-unused-vars": "off"
+    }
   },
   "browserslist": [
     "> 1%",
