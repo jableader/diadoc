@@ -1,5 +1,3 @@
-import { setTransitionHooks } from "vue";
-
 const Box = function(x, y, w, h) { return {x,y,w,h}; }
 
 class Label {
@@ -58,7 +56,7 @@ class Shape {
                 case 'top': return { 'x': xMid, 'y': y };
                 case 'bottom': return { 'x': xMid, 'y': y + h };
                 case 'left': return { 'x': x, 'y': yMid };
-                case 'right': return { 'x': x + w, 'y': yMid / 2 };
+                case 'right': return { 'x': x + w, 'y': yMid };
             }
         });
     }
