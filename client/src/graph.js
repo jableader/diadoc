@@ -55,20 +55,22 @@ export default {
             return []
         }
 
-        var parent = id.path.split('/');
-        parent.pop();
-        parent = parent.join('/');
+        var parent = this.getParent(id);
         
         var results = [];
-        if (parent && parent != '/') {
-            results.push({path: parent});
+        if (parent?.path && parent.path != '/') {
+            results.push(parent);
         }
 
         var node = this.getNode(root, id);
         for (const child in node) {
             if (child != '__meta')
-                results.push({ path: id.path + '/' + child });
+                results.push(this.idForPath(id.path + '/' + child));
         }
+
+        const link = node['__meta']?.link?.to;
+        if (link)
+            results.push(this.idForPath(link));
 
         return results;
     },
