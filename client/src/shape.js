@@ -5,18 +5,19 @@ class Label {
         this.text = text;
         this.size = size;
         this.scale = scale;
+        this.padding = 5;
     }
 
     get bottom() {
-        return this.size.h * this.scale;
+        return this.box.h + this.box.y;
     }
 
     get box() {
-        return Box(0, 0, this.size.w, this.bottom)
+        return Box(this.padding, this.padding, this.size.w * this.scale + this.padding, this.size.h * this.scale + this.padding);
     }
 
     get baseline() {
-        return this.bottom * 0.8
+        return this.box.h * 0.8;
     }
 }
 

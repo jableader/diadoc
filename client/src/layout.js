@@ -117,7 +117,7 @@ function stack(id, ref, label, childShapes) {
 
   const shapeBox = Shapes.Box(0, 0,
     Math.max(label.box.w, childBox.w + 2 * padding),
-    label.box.h + childBox.h + padding,
+    label.bottom + childBox.h + padding,
   );
 
   const children = new Shapes.Children(childShapes, childBox, scale);
@@ -143,8 +143,11 @@ function shapes(id, ref) {
   }
 
   const label = toLabel(meta.caption, meta.viewport);
-  if (childShapes.length == 0)
-    return new Shapes.Shape(id, label, label.box, new Shapes.Children([], Shapes.Box(0,0,0,0), 1), style);
+  if (childShapes.length == 0) {
+    const {x, y, w, h} = label.box;
+
+    return new Shapes.Shape(id, label, Shapes.Box(0, 0, w + x, y + h), new Shapes.Children([], Shapes.Box(0,0,0,0), 1), style);
+  }
 
   return layouts[meta.layout](id, ref, label, childShapes);
 }
