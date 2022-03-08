@@ -1,7 +1,6 @@
 import Shapes from '@/shape.js';
 import Measure from '@/measure.js';
 import Graph from '@/graph.js'
-import shape from './shape';
 
 const metaKey = '__meta';
 const padding = 5.0;
@@ -79,14 +78,8 @@ function closestPorts(shapes, idA, idB) {
   return closest;
 }
 
-function intersection(b1, b2) {
-  var x_overlap = Math.max(0, Math.min(b1.x + b1.w, b2.x + b2.w) - Math.max(b1.x, b2.x));
-  var y_overlap = Math.max(0, Math.min(b1.y + b1.h, b2.y + b2.h) - Math.max(b1.y, b2.y));
-  return x_overlap * y_overlap;
-}
-
 function randomCoord(viewbox, occupied, c) {
-  const totalIntersection = (box) => occupied.reduce((s, b) => s + intersection(b, box), 0);
+  const totalIntersection = (box) => occupied.reduce((s, b) => s + Shapes.intersection(b, box), 0);
   const b = { ...c.box };
 
   let lowest = { 'i': Number.MAX_VALUE, 'b': b };
