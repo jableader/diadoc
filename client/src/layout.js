@@ -1,6 +1,7 @@
 import Shapes from '@/shape.js';
 import Measure from '@/measure.js';
 import Graph from '@/graph.js'
+import shape from './shape';
 
 const metaKey = '__meta';
 const padding = 5.0;
@@ -78,19 +79,49 @@ function closestPorts(shapes, idA, idB) {
   return closest;
 }
 
+function intersection(b1, b2) {
+  var x_overlap = Math.max(0, Math.min(b1.x + b1.w, b2.x + b2.w) - Math.max(b1.x, b2.x));
+  var y_overlap = Math.max(0, Math.min(b1.y + b1.h, b2.y + b2.h) - Math.max(b1.y, b2.y));
+  return x_overlap * y_overlap;
+}
+
+function randomCoord(viewbox, occupied, c) {
+  const totalIntersection = (box) => occupied.reduce((s, b) => s + intersection(b, box), 0);
+  const b = { ...c.box };
+
+  let lowest = { 'i': Number.MAX_VALUE, 'b': b };
+  for (let attempts = 20; attempts > 0 && lowest.i > 0; attempts--)
+  {
+    b.x = Math.random() * (viewbox.w - b.w);
+    b.y = Math.random() * (viewbox.h - b.h);
+
+    const i = totalIntersection(b);
+    if (i < lowest.i)
+      lowest = {i, b: { ...b }};
+  }
+
+  return lowest.b;
+}
+
 function randomxy(id, ref, label, childShapes) {
   const viewbox = ref[metaKey].viewbox ?? {
     w: childShapes.reduce((w, c) => w + c.box.w, 0) + padding * childShapes.length,
     h: childShapes.reduce((h, c) => h + c.box.h, 0) + padding * childShapes.length
   }
 
-  for (const c of childShapes) {
-    c.box.x = Math.random() * (viewbox.w - c.box.w);
-    c.box.y = Math.random() * (viewbox.h - c.box.h);
+  const biggestFirst = [...childShapes].sort((c1, c2) => c2.box.w * c2.box.h - c1.box.w * c1.box.h);
+  const occupied = [];
+  for (const c of biggestFirst) {
+    const b = randomCoord(viewbox, occupied, c);
+    
+    c.box.x = b.x;
+    c.box.y = b.y;
+
+    occupied.push(b);
   }
 
   const children = new Shapes.Children(childShapes, Shapes.Box(0, label.bottom, viewbox.w, viewbox.h), 1);
-  return new Shapes.Shape(id, label, Shapes.Box(0, 0, viewbox.w, viewbox.h), children, style);
+  return new Shapes.Shape(id, label, Shapes.Box(0, 0, viewbox.w, children.box.h + label.bottom), children, style);
 }
 
 function stack(id, ref, label, childShapes) {
@@ -149,7 +180,7 @@ function shapes(id, ref) {
     return new Shapes.Shape(id, label, Shapes.Box(0, 0, w + x, y + h), new Shapes.Children([], Shapes.Box(0,0,0,0), 1), style);
   }
 
-  return layouts[meta.layout](id, ref, label, childShapes);
+  return layouts[meta.layout ?? "randomxy"](id, ref, label, childShapes);
 }
 
 export default { shapes, trueBoundingBox, closestPorts }
