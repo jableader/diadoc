@@ -13,13 +13,11 @@ import Graph from '@/graph.js';
 import Layout from '@/layout.js';
 
 function findLinks(reference_data) {
-    var links = [];
+    let links = [];
     Graph.walk(reference_data, function(id, node) {
-        var link =  node?.['__meta']?.link;
-        if (link) {
-            links.push({ from: id, to: Graph.idForPath(link.to) });
-        }
-
+        let nodeLinks = node?.['__meta']?.links?.map(link => ({ from: id, to: Graph.idForPath(link.to) }));
+        if (nodeLinks)
+            links = links.concat(nodeLinks)
         return true;
     });
 

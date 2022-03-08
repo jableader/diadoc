@@ -68,11 +68,8 @@ export default {
                 results.push(this.idForPath(id.path + '/' + child));
         }
 
-        const link = node['__meta']?.link?.to;
-        if (link)
-            results.push(this.idForPath(link));
-
-        return results;
+        const links = node['__meta']?.links?.map(l => this.idForPath(l.to)) ?? [];
+        return results.concat(links);
     },
 
     closestPath(paths, id) {

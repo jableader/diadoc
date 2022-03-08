@@ -33,9 +33,9 @@
         "address":{
             "__meta":{
                 "caption": "link: address",
-                "link": {
+                "links": [{
                     "to": "/address"
-                }
+                }]
             }
         },
         "name":{
