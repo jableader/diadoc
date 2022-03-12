@@ -37,15 +37,15 @@ import svgPanZoom from 'svg-pan-zoom'
 import svgBox from './svg-box.vue'
 import layout from '@/layout.js'
 
-function createPanAndZoom(targetElement) {
-    const panAndZoom = svgPanZoom(targetElement, { 
+function createPanZoom(targetElement) {
+    const panZoom = svgPanZoom(targetElement, { 
       viewportSelector: '#svg-pan-zoom-viewport',
       dblClickZoomEnabled: false,
       maxZoom: 100,
       minZoom: 0.1,
     });
 
-    return panAndZoom;
+    return panZoom;
 }
 
 function allIds(shapes) {
@@ -67,17 +67,15 @@ function calcCenter(p, l, z, vl) { // point[x|y], length[w|h], zoom, viewbox[w|h
   return vl / 2 - offset * z;
 }
 
-function centerElement(box, panAndZoom){
-    panAndZoom.resize();
-
-    const { width, height, realZoom, viewBox } = panAndZoom.getSizes();
-    panAndZoom.pan({
+function centerElement(box, panZoom){
+    const { width, height, realZoom, viewBox } = panZoom.getSizes();
+    panZoom.pan({
       x: calcCenter(box.x, box.w, realZoom, width), 
       y: calcCenter(box.y, box.h, realZoom, height)
     });
 
     const dz = Math.min((viewBox.width / box.w), (viewBox.height / box.h)) * 0.8;
-    panAndZoom.zoomAtPoint(dz, {x: width / 2, y: height / 2});
+    panZoom.zoomAtPoint(dz, {x: width / 2, y: height / 2}, true);
 }
 
 export default {
@@ -100,31 +98,55 @@ export default {
       return allIds(this.shapes).map(id => layout.trueBoundingBox(this.shapes, id))
     }
   },
-
   data() {
     return { recentering: false };
   },
-
   watch: {
-    selection(newValue){
-      if (newValue && this.panAndZoom) {
-        var box = layout.trueBoundingBox(this.shapes, newValue);
-        this.$nextTick(() => {
-          this.recentering = true;
-          centerElement(box, this.panAndZoom);
-
-          setTimeout(() => this.recentering = false, 500);
-        });
-      }
+    selection(){
+      this.recenter();
+    },
+    shapes() {
+      this.resetPanZoom();
+      this.recenter();
     }
   },
-
-  updated: function() {
-    if (this.shapes && !this.panAndZoom)
-      this.panAndZoom = createPanAndZoom(this.$refs['canvas']);
+  mounted() {
+    this.resetPanZoom();
+    this.recenter();
   },
-
+  unmounted() {
+    this.resetPanZoom()
+  },
   methods: {
+    resetPanZoom() {
+      if (this._pz) {
+        this._pz.destroy();
+        this._pz = null;
+      }
+    },
+    panZoom() {
+      if (this.shapes?.length) {
+        return this._pz ?? (this._pz = createPanZoom(this.$refs['canvas']));
+      }
+    },
+    recenter: function() {
+      if (this.shapes && this.shapes.length) {
+        this.$nextTick(function() {
+          const pz = this.panZoom();
+          if (pz) {
+            pz.resize();
+
+            this.recentering = true;
+            if (this.selection){
+              var box = layout.trueBoundingBox(this.shapes, this.selection);
+              centerElement(box, pz);
+            }
+
+            setTimeout(() => this.recentering = false, 500);
+          }
+        });
+      }
+    },
     shapeSelected(id) {
       this.$emit('shape-selected', id);
     }

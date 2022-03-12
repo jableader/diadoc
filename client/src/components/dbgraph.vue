@@ -24,6 +24,12 @@ function findLinks(reference_data) {
     return links;
 }
 
+function buildShapes(reference) {
+    const shapes = Layout.shapes(Graph.idForPath(''), reference).children;
+    const links = findLinks(reference).map(l => Layout.closestPorts(shapes, l.from, l.to));
+    return { shapes, links }
+}
+
 export default {
   name: 'Graph',
   components: {
@@ -40,19 +46,14 @@ export default {
       }
   },
   data() {
-      return { shapes: null, links: null, selected: null };
+    return { selected: null, ...buildShapes(this.reference ?? {})}
   },
   watch: {
-    reference(value) {
-        if (value) {
-            const shapes = Layout.shapes(Graph.idForPath(''), this.reference).children;
-            this.shapes = shapes;
-            this.links = findLinks(value).map(l => Layout.closestPorts(shapes, l.from, l.to));
-        } else {
-            this.shapes = null;
-            this.links = null;
-        }
-    }
+      reference(v) {
+          const {shapes, links} = buildShapes(v);
+          this.shapes = shapes;
+          this.links = links;
+      }
   },
   methods: {
     requestSelect(id) {

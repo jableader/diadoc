@@ -166,7 +166,7 @@ function shapes(id, ref) {
     childShapes.push(shapes(Graph.join(id, key), ref[key]));
   }
 
-  const label = toLabel(meta.caption, meta.viewport);
+  const label = toLabel(meta?.caption ?? Graph.friendlyId(id), meta?.viewport);
   if (childShapes.length == 0) {
     const {x, y, w, h} = label.box;
 
