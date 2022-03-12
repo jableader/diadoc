@@ -1,6 +1,7 @@
 import Shapes from '@/shape.js';
 import Measure from '@/measure.js';
-import Graph from '@/graph.js'
+import Graph from '@/graph.js';
+import Springy from '@/lib/springy.js';
 
 const metaKey = '__meta';
 const padding = 5.0;
@@ -117,6 +118,87 @@ function randomxy(id, ref, label, childShapes) {
   return new Shapes.Shape(id, label, Shapes.Box(0, 0, viewbox.w, children.box.h + label.bottom), children, style);
 }
 
+function getChildLinksFlattened(parent, ref) { // Returns all links of children, truncated to children of id
+  let links = {};
+  Graph.walk(ref, (id, n) => {
+    const linkIds = n['__meta']?.links?.map(l => Graph.idForPath(l.to)) ?? [];
+    for (const l of linkIds) {
+      if (Graph.isChildOf(parent, l)) {
+        const newEdge = {
+          from: Graph.asChildOf(parent, id),
+          to: Graph.asChildOf(parent, l)
+        }
+
+        links[newEdge.from.path + '|' + newEdge.to.path] = newEdge;
+      }
+    }
+
+    return true;
+  }, parent);
+
+  return Object.values(links);
+}
+
+function runGraphLayout(layout, id) {
+  var energy = 9999;
+  var i;
+  for (i = 0; i < 1000 && energy > 0.01; i++) {
+    layout.tick(0.03);
+    energy = layout.totalEnergy();
+  }
+  console.log(id, i);
+}
+
+function translateToMidpoint(layout, nodes, shape) {
+  var {x, y} = layout.point(nodes[shape.id.path]).p;
+  var {w, h} = shape.box;
+  return { 'x': x*20 + w / 2, 'y': y*20 + h / 2 };
+}
+
+function springy(id, ref, label, childShapes) {
+  const edges = getChildLinksFlattened(id, ref);
+
+  const g = new Springy.Graph();
+  const nodes = {};
+  const shapes = {};
+  for (const s of childShapes) {
+    nodes[s.id.path] = g.newNode();
+    shapes[s.id.path] = s;
+  }
+
+  for (const e of edges) {
+    g.newEdge(nodes[e.from.path], nodes[e.to.path]);
+  }
+
+  var layout = new Springy.Layout.ForceDirected(g, 650.0, 10000.0, 0.5);
+  runGraphLayout(layout, id, g);
+
+  const points = childShapes.reduce((p, s) => ({ ...p, [s.id.path]: translateToMidpoint(layout, nodes, s)}), {});
+  const translateX = Object.entries(points).reduce((a, [k, v]) => Math.min(a, v.x), Number.MAX_VALUE);
+  const translateY = Object.entries(points).reduce((a, [k, v]) => Math.min(a, v.y), Number.MAX_VALUE);
+  
+  for (const s of childShapes) {
+    const { x, y } = points[s.id.path];
+    s.box.x = (x - translateX) - s.box.w/2;
+    s.box.y = (y - translateY) - s.box.h/2;
+  }
+
+  const maxOf = (f) => childShapes.reduce((a, c) => Math.max(a, f(c)), 0);
+  const minOf = (f) => childShapes.reduce((a, c) => Math.min(a, f(c)), Number.MAX_VALUE)
+
+  const yMax = maxOf(c => c.box.y + c.box.h);
+  const xMax = maxOf(c => c.box.x + c.box.w);
+
+  const children = new Shapes.Children(childShapes, Shapes.Box(5, label.bottom, xMax, yMax), 1);
+  const shapeBox = Shapes.Box(
+    0, 0,
+    Math.max(label.box.w + label.box.x, children.box.w),
+    label.bottom + children.box.h
+  );
+
+  return new Shapes.Shape(id, label, shapeBox, children, style);
+}
+
 function stack(id, ref, label, childShapes) {
   const innerWidth = childShapes.reduce((w, c) => Math.max(w, c.box.w), 0);
   const childWidth = (ref[metaKey].viewbox?.w ?? innerWidth);
@@ -155,7 +237,7 @@ function toLabel(text, viewport) {
   return new Shapes.Label(text, size, scale);
 }
 
-var layouts = { stack, randomxy };
+var layouts = { stack, randomxy, springy };
 function shapes(id, ref) {
   const meta = ref[metaKey];
   const childShapes = [];
@@ -173,7 +255,7 @@ function shapes(id, ref) {
     return new Shapes.Shape(id, label, Shapes.Box(0, 0, w + x, y + h), new Shapes.Children([], Shapes.Box(0,0,0,0), 1), style);
   }
 
-  return layouts[meta.layout ?? "randomxy"](id, ref, label, childShapes);
+  return layouts[meta.layout ?? "springy"](id, ref, label, childShapes);
 }
 
 export default { shapes, trueBoundingBox, closestPorts }

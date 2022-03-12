@@ -17,6 +17,15 @@ export default {
         return { path };
     },
 
+    isChildOf(parent, child) {
+        return child.path.startsWith(parent.path);
+    },
+
+    asChildOf(parent, child) {
+        const nextSlash = child.path.indexOf('/', parent.path.length + 1);
+        return nextSlash > 0 ? this.idForPath(child.path.substring(0, nextSlash)) : child;
+    },
+
     join(root, child) {
         return this.idForPath(this.pathForId(root) + '/' + child);
     },
@@ -95,7 +104,7 @@ export default {
         return '/' + parts.join('');
     },
 
-    walk(n, f) { // Calls f(id, node) for full tree, skipping __meta nodes. Return false to not enumerate children of id
+    walk(n, f, id) { // Calls f(id, node) for full tree, skipping __meta nodes. Return false to not enumerate children of id
         function __walk(path, node) {
             if (f(this.idForPath(path), node)) {
                 for (var name in node)
@@ -104,7 +113,7 @@ export default {
             }
         }
 
-        __walk.call(this, '', n);
+        __walk.call(this, id?.path ?? '', n);
     },
 
     friendlyId(id) {
