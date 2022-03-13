@@ -111,7 +111,7 @@ function layout(id, ref, label, childShapes, style) {
 
     var bbox = layout.getBoundingBox();
     const translateX = bbox.bottomleft.x;
-    const translateY = bbox.topright.y;
+    const translateY = bbox.bottomleft.y;
 
     layout.eachNode(function(n, p) {
       n.data.shape.box.x = p.p.x - translateX;
