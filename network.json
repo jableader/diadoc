@@ -21,6 +21,7 @@
             },
             "docker": {
                 "__meta": {
+                    "layout": "springy",
                     "caption": "Docker Images",
                     "viewbox": {"w": 500, "h": 350}
                 },
@@ -31,8 +32,7 @@
                     "__meta": {
                         "caption": "⭳ QBittorrent",
                         "links": [
-                            { "to": "/first-lan/server/docker/vpn-out" },
-                            { "to": "/first-lan/server/filesystem" }
+                            { "to": "/first-lan/server/docker/vpn-out" }
                         ]
                     }
                 },
@@ -48,7 +48,6 @@
                     "__meta": {
                         "caption": "📺 Sonarr",
                         "links": [
-                            { "to": "/first-lan/server/filesystem" },
                             { "to": "/first-lan/server/docker/qbittorrent" },
                             { "to": "/first-lan/server/docker/jackett" }
                         ]
@@ -58,7 +57,6 @@
                     "__meta": {
                         "caption": "🍿 Radarr",
                         "links": [
-                            { "to": "/first-lan/server/filesystem" },
                             { "to": "/first-lan/server/docker/qbittorrent" },
                             { "to": "/first-lan/server/docker/jackett" }
                         ]
@@ -66,8 +64,7 @@
                 },
                 "plex": {
                     "__meta": {
-                        "caption": "▶ Plex",
-                        "links": [{ "to": "/first-lan/server/filesystem" }]
+                        "caption": "▶ Plex"
                     }
                 }
             }
