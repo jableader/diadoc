@@ -4,44 +4,40 @@
         "viewbox": { "w": 700, "h" : 600 }
     },
     "address": {
-        "__meta": {
-            "layout": "stack",
-            "viewbox": { "w": 100 },
-            "caption": "Address"
-        },
-        "houseNumber": {
-            "__meta": {
-                "caption": "int: HouseNumber"
-            }
-        },
-        "streetName":{
-            "__meta":{
-                "caption": "string: streetName"
-            }
-        },
-        "town":{
-            "__meta":{
-                "caption": "string: town"
-            }
-        }
+        "__meta": {"layout": "stack"},
+        "houseNumber": {},
+        "streetName":{},
+        "town":{}
     },
     "person":{
-        "__meta": {
-            "layout": "stack",
-            "caption": "Person"
-        },
-        "address":{
-            "__meta":{
-                "caption": "link: address",
-                "links": [{
-                    "to": "/address"
-                }]
-            }
-        },
-        "name":{
-            "__meta":{
-                "caption": "string: name"
-            }
-        }
+        "__meta": { "layout": "stack" },
+        "address":{"__meta":{"links": [{"to": "/address"}]}},
+        "name":{},
+        "birthdate":{},
+        "email": {}
+    },
+    "reciept":{
+        "__meta": {"layout": "stack"},
+        "line": { "__meta": { "links": [{ "to": "/lineitem" }] }},
+        "coupon": {"__meta": { "links": [{ "to": "/coupon" }] } },
+        "purchased_by": {"__meta": {"links": [{"to": "/person"}]}},
+        "total": {},
+        "date": {}
+    },
+    "lineitem": {
+        "__meta": {"layout": "stack"},
+        "product": {"__meta": {"links": [{"to": "/product"}]}},
+        "qty": {}
+    },
+    "product":{
+        "__meta": {"layout": "stack"},
+        "name": {},
+        "price": {},
+        "stock": {}
+    },
+    "coupon": {
+        "__meta": {"layout": "stack"},
+        "code": {},
+        "discount": {}
     }
 }

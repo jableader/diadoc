@@ -6,6 +6,11 @@ META_KEY = '__meta'
 def generate_lorem():
     return requests.get('https://jaspervdj.be/lorem-markdownum/markdown.txt').text
 
+def get_caption(node, fallback):
+    if META_KEY in node and 'caption' in node[META_KEY]:
+        return node[META_KEY]['caption']
+    return fallback
+
 def create_subtree(root, o):
     for k, v in o.items():
         if k == META_KEY:
@@ -13,8 +18,11 @@ def create_subtree(root, o):
 
         p = path.join(root, k)
         os.mkdir(p)
+
         with open(path.join(p, 'self.md'), 'w') as md:
-            md.write('# ' + v[META_KEY]['caption'] + '\n' + generate_lorem())
+            print("Generating %s" % p)
+            
+            md.write('# ' + get_caption(v, k) + '\n' + generate_lorem())
 
         create_subtree(p, v)
 
