@@ -1,6 +1,8 @@
-import Shapes from '@/shape.js';
+import Shape from '@/shape.js';
 import Graph from '@/graph.js';
-import Springy from 'springy';
+import Springy, { Vector } from 'springy';
+
+const maxOf = (l, f) => l.reduce((a, c) => Math.max(a, f(c)), 0);
 
 function getChildLinksFlattened(parent, ref) { // Returns all links of children, truncated to children of id
   let links = {};
@@ -33,22 +35,70 @@ function runGraphLayout(layout, id) {
   console.log(id, i);
 }
 
-function translateToMidpoint(layout, nodes, shape) {
-  var {x, y} = layout.point(nodes[shape.id.path]).p;
-  var {w, h} = shape.box;
-  return { 'x': x*20 + w / 2, 'y': y*20 + h / 2 };
+function boxOf(node, point) {
+  return { ...node.data.shape.box, x: point.p.x, y: point.p.y };
+}
+
+function mid(box) {
+  return new Springy.Vector(box.x + box.w / 2, box.y + box.y / 2);
+}
+
+function repulseOverlappingBoxes() {
+  this.eachNode(function(n1, p1) {
+    const b1 = boxOf(n1, p1);
+    this.eachNode(function (n2, p2) {
+      if (n1 == n2)
+        return;
+
+      const b2 = boxOf(n2, p2);
+      const intersection = Shape.intersection(b1, b2);
+      if (intersection > 0) {
+        const m1 = mid(b1);
+        const m2 = mid(b2);
+        
+        let delta = m1.subtract(m2);
+        if (delta.x == 0 && delta.y == 0) {
+          delta = new Vector(1, 0);
+        }
+        
+        delta = delta.normalise().multiply(this.repulsion * this.repulsion * 0.5);
+
+        p1.applyForce(delta);
+        p2.applyForce(delta.multiply(-1));
+      }
+    });
+  });
+}
+
+function getSpringyLayout(g) {
+  const boxes = g.nodes.map(n => n.data.shape.box);
+  const yTop = boxes.reduce((s, b) => s + b.h, 0);
+  const xTop = boxes.reduce((s, b) => s + b.w, 0);
+  const largestDim = boxes.reduce((m, b) => Math.max(m, b.w, b.h), 0);
+
+  const layout = new Springy.Layout.ForceDirected(g, largestDim / 2, 2*largestDim, 0.2);
+  for (const n of g.nodes) {
+    const p = new Springy.Vector(Math.random() * xTop, Math.random() * yTop);
+    layout.nodePoints[n.id] = new Springy.Layout.ForceDirected.Point(p, 1);
+  }
+
+  const originalTick = layout.tick;
+  layout.tick = function(ts) {
+    repulseOverlappingBoxes.call(layout, ts);
+    originalTick.call(layout, ts);
+  }
+
+  return layout;
 }
 
 function layout(id, ref, label, childShapes, style) {
-    const maxOf = (f) => childShapes.reduce((a, c) => Math.max(a, f(c)), 0);
-  
     const edges = getChildLinksFlattened(id, ref);
   
     const g = new Springy.Graph();
     const nodes = {};
     const shapes = {};
     for (const s of childShapes) {
-      nodes[s.id.path] = g.newNode();
+      nodes[s.id.path] = g.newNode({ shape: s });
       shapes[s.id.path] = s;
     }
   
@@ -56,32 +106,30 @@ function layout(id, ref, label, childShapes, style) {
       g.newEdge(nodes[e.from.path], nodes[e.to.path]);
     }
   
-    const largestDim = maxOf(c => Math.max(c.box.h, c.box.w));
-    var layout = new Springy.Layout.ForceDirected(g, largestDim, largestDim*10, 0.5);
+    var layout = getSpringyLayout(g);
     runGraphLayout(layout, id, g);
-  
-    const points = childShapes.reduce((p, s) => ({ ...p, [s.id.path]: translateToMidpoint(layout, nodes, s)}), {});
-    const translateX = Object.entries(points).reduce((a, [k, v]) => Math.min(a, v.x), Number.MAX_VALUE);
-    const translateY = Object.entries(points).reduce((a, [k, v]) => Math.min(a, v.y), Number.MAX_VALUE);
+
+    var bbox = layout.getBoundingBox();
+    const translateX = bbox.bottomleft.x;
+    const translateY = bbox.topright.y;
+
+    layout.eachNode(function(n, p) {
+      n.data.shape.box.x = p.p.x - translateX;
+      n.data.shape.box.y = p.p.y - translateY;
+    });
     
-    for (const s of childShapes) {
-      const { x, y } = points[s.id.path];
-      s.box.x = (x - translateX);
-      s.box.y = (y - translateY);
-    }
-  
-    const yMax = maxOf(c => c.box.y + c.box.h);
-    const xMax = maxOf(c => c.box.x + c.box.w);
+    const yMax = maxOf(childShapes, c => c.box.y + c.box.h);
+    const xMax = maxOf(childShapes, c => c.box.x + c.box.w);
   
     const padding = 5;
-    const children = new Shapes.Children(childShapes, Shapes.Box(padding, label.bottom + padding, xMax + 2 * padding, yMax + 2 * padding), 1);
-    const shapeBox = Shapes.Box(
+    const children = new Shape.Children(childShapes, Shape.Box(padding, label.bottom + padding, xMax + 2 * padding, yMax + 2 * padding), 1);
+    const shapeBox = Shape.Box(
       0, 0,
       Math.max(label.box.w + label.box.x, children.box.w),
       label.bottom + children.box.h
     );
   
-    return new Shapes.Shape(id, label, shapeBox, children, style);
+    return new Shape.Shape(id, label, shapeBox, children, style);
   }
 
   export default { layout }
