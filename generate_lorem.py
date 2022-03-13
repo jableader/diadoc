@@ -8,7 +8,7 @@ def generate_lorem():
 
 def get_caption(node, fallback):
     if META_KEY in node and 'caption' in node[META_KEY]:
-        return v[META_KEY]['caption']
+        return node[META_KEY]['caption']
     return fallback
 
 def create_subtree(root, o):
@@ -20,6 +20,8 @@ def create_subtree(root, o):
         os.mkdir(p)
 
         with open(path.join(p, 'self.md'), 'w') as md:
+            print("Generating %s" % p)
+            
             md.write('# ' + get_caption(v, k) + '\n' + generate_lorem())
 
         create_subtree(p, v)
