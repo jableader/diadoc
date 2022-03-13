@@ -35,7 +35,7 @@
 <script>
 import svgPanZoom from 'svg-pan-zoom'
 import svgBox from './svg-box.vue'
-import layout from '@/layout.js'
+import Shape from '@/shape.js'
 
 function createPanZoom(targetElement) {
     const panZoom = svgPanZoom(targetElement, { 
@@ -95,7 +95,7 @@ export default {
   },
   computed:  {
     bboxes() {
-      return allIds(this.shapes).map(id => layout.trueBoundingBox(this.shapes, id))
+      return allIds(this.shapes).map(id => Shape.trueBoundingBox(this.shapes, id))
     }
   },
   data() {
@@ -111,7 +111,6 @@ export default {
     }
   },
   mounted() {
-    this.resetPanZoom();
     this.recenter();
   },
   unmounted() {
@@ -138,7 +137,7 @@ export default {
 
             this.recentering = true;
             if (this.selection){
-              var box = layout.trueBoundingBox(this.shapes, this.selection);
+              var box = Shape.trueBoundingBox(this.shapes, this.selection);
               centerElement(box, pz);
             }
 

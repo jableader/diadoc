@@ -119,4 +119,11 @@ export default {
     friendlyId(id) {
         return id.path;
     },
+
+    leafName(id) {
+        if (!id?.path)
+            return 'ROOT';
+            
+        return id.path.match(/(?:\/|^)([^/]+)\/*$/)[1];
+    }
 }

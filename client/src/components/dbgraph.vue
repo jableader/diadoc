@@ -10,7 +10,8 @@
 <script>
 import SvgLayout from './svg-layout.vue'
 import Graph from '@/graph.js';
-import Layout from '@/layout.js';
+import Layout from '@/layouts/layout.js';
+import Shape from '@/shape.js'
 
 function findLinks(reference_data) {
     let links = [];
@@ -26,7 +27,7 @@ function findLinks(reference_data) {
 
 function buildShapes(reference) {
     const shapes = Layout.shapes(Graph.idForPath(''), reference).children;
-    const links = findLinks(reference).map(l => Layout.closestPorts(shapes, l.from, l.to));
+    const links = findLinks(reference).map(l => Shape.closestPorts(shapes, l.from, l.to));
     return { shapes, links }
 }
 
