@@ -24,11 +24,18 @@
       </g>
     </g>
   </svg>
+  <button @click="recenter(true)">[ ]</button>
 </template>
 
 <style scoped>
   .animate {
     transition: transform 0.5s ease;
+  }
+
+  button {
+    position: absolute;
+    top: 0;
+    right: 0;
   }
 </style>
 
@@ -128,7 +135,7 @@ export default {
         return this._pz ?? (this._pz = createPanZoom(this.$refs['canvas']));
       }
     },
-    recenter: function() {
+    recenter: function(refitGraph) {
       if (this.shapes && this.shapes.length) {
         this.$nextTick(function() {
           const pz = this.panZoom();
@@ -136,7 +143,9 @@ export default {
             pz.resize();
 
             this.recentering = true;
-            if (this.selection){
+            if (refitGraph) {
+              pz.fit();
+            } else if (this.selection){
               var box = Shape.trueBoundingBox(this.shapes, this.selection);
               centerElement(box, pz);
             }
