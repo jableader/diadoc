@@ -29,6 +29,11 @@
         "product": {"__meta": {"links": [{"to": "/product"}]}},
         "qty": {}
     },
+    "favorites":{
+        "__meta": {"layout": "stack"},
+        "product": {"__meta": {"links": [{"to": "/product"}]}},
+        "user": {"__meta": {"links": [{"to": "/person"}]}}
+    },
     "product":{
         "__meta": {"layout": "stack"},
         "name": {},
