@@ -1,6 +1,6 @@
 <template>
   <div class="top-level">
-    <div class="graph-container" :style="{ 'right': selectedReferenceId ? '50%' : '0', left: searchResults ? '30ex' : '0'}">
+    <div class="graph-container" :style="{ 'right': selectedReferenceId ? '50%' : '0' }">
       <dbgraph 
         ref="graph"
         :reference="reference"
