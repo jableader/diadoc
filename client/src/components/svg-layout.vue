@@ -5,7 +5,7 @@
     <defs>
       <marker id="head" orient="auto"
         markerWidth="5" markerHeight="6"
-        refX="0.1" refY="2">
+        refX="5" refY="2">
         <path d="M0,0 V4 L5,2 Z" fill="black"/>
       </marker>
     </defs>
