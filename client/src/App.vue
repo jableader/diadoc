@@ -72,6 +72,7 @@ export default {
       this.searchResults = data.searchResults(item);
     },
     showReference(id) {
+      this.searchResults = null;
       this.selectedReferenceId = id;
     },
     updateSearchSuggestions(text) {
@@ -136,8 +137,10 @@ export default {
 .search-results {
   position: absolute;
   overflow-y: scroll;
+  overflow-x: hidden;
   top: 8ex;
   width: 30ex;
+  max-height: 90%;
   z-index: 20;
   padding: 1ex 5px 2px 5px;
 
