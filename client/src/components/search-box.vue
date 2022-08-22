@@ -11,7 +11,7 @@
 
         <div
             class="search-droplist"
-            v-if="isTyping">
+            v-if="isTyping && searchTerm.length >= 3">
             <ul>
                 <li v-for="item in suggestions" 
                     :key="uniqueSearchKey(item)" 
