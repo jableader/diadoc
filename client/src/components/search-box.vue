@@ -23,6 +23,37 @@
     </div>
 </template>
 
+<style scoped>
+ul {
+    margin-top: 0;
+    
+    padding: 1px;
+    border: 1px solid gray;
+    background-color: white;
+    color: black;
+}
+
+li {
+    list-style-type: none;
+    padding-left: 10px;
+    border-bottom: 1px solid gray;
+}
+
+input[type=text] {
+    width: 100%;
+    height: 2em;
+
+    border-radius: 20px;
+    padding-left: 10px;
+    font-size: larger;
+}
+
+.search-box {
+    overflow-y: visible;
+}
+
+</style>
+
 <script>
 
 export default {
@@ -54,7 +85,7 @@ export default {
         },
         onSearchboxKeyup(ev) {
             if (ev.keyCode == 13 && this.suggestions.length > 0) // Enter key
-                this.suggestionSelected(this.suggestions[0]);
+                this.suggestionSelected(this.searchTerm);
             else
                 this.requestSuggestionRefresh();
         },
@@ -103,34 +134,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-ul {
-    margin-top: 0;
-    
-    padding: 1px;
-    border: 1px solid gray;
-    background-color: white;
-    color: black;
-}
-
-li {
-    list-style-type: none;
-    padding-left: 10px;
-    border-bottom: 1px solid gray;
-}
-
-input[type=text] {
-    width: 100%;
-    height: 2em;
-
-    border-radius: 20px;
-    padding-left: 10px;
-    font-size: larger;
-}
-
-.search-box {
-    overflow-y: visible;
-}
-
-</style>
