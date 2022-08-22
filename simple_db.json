@@ -1,6 +1,6 @@
 {
     "__meta": {
-        "layout": "randomxy",
+        "layout": "springy",
         "viewbox": { "w": 700, "h" : 600 }
     },
     "address": {

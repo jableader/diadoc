@@ -25,22 +25,12 @@ function getChildLinksFlattened(parent, ref) { // Returns all links of children,
   return Object.values(links);
 }
 
-function runGraphLayout(layout, id) {
-  var energy = 9999;
-  var i;
-  for (i = 0; i < 1000 && energy > 0.01; i++) {
-    layout.tick(0.03);
-    energy = layout.totalEnergy();
-  }
-  console.log(id, i);
-}
-
 function boxOf(node, point) {
   return { ...node.data.shape.box, x: point.p.x, y: point.p.y };
 }
 
 function mid(box) {
-  return new Springy.Vector(box.x + box.w / 2, box.y + box.y / 2);
+  return new Springy.Vector(box.x + box.w / 2, box.y + box.h / 2);
 }
 
 function repulseOverlappingBoxes() {
@@ -61,13 +51,26 @@ function repulseOverlappingBoxes() {
           delta = new Vector(1, 0);
         }
         
-        delta = delta.normalise().multiply(this.repulsion * this.repulsion * 0.5);
+        let direction = delta.normalise();
+        let weight = new Vector(direction.x * b1.w, direction.y * b1.h);
+        let force = weight.multiply(this.repulsion);
 
-        p1.applyForce(delta);
-        p2.applyForce(delta.multiply(-1));
+        p1.applyForce(force);
+        p2.applyForce(force.multiply(-1));
       }
     });
   });
+}
+
+function runGraphLayout(layout, id) {
+  const limit = 100;
+  for (var i = 0, energy = 9999; i < limit && energy > 0.01; i++) {
+    layout.tick(0.03);
+    energy = layout.totalEnergy();
+    if (energy < 1 || i > 0.5 * limit)
+      layout.repulseOverlappingBoxes = repulseOverlappingBoxes;
+  }
+  console.log(id, i);
 }
 
 function getSpringyLayout(g) {
@@ -76,7 +79,7 @@ function getSpringyLayout(g) {
   const xTop = boxes.reduce((s, b) => s + b.w, 0);
   const largestDim = boxes.reduce((m, b) => Math.max(m, b.w, b.h), 0);
 
-  const layout = new Springy.Layout.ForceDirected(g, largestDim / 2, 2*largestDim, 0.2);
+  const layout = new Springy.Layout.ForceDirected(g, 0, largestDim, 0.1, 0, 10 * largestDim);
   for (const n of g.nodes) {
     const p = new Springy.Vector(Math.random() * xTop, Math.random() * yTop);
     layout.nodePoints[n.id] = new Springy.Layout.ForceDirected.Point(p, 1);
@@ -84,7 +87,9 @@ function getSpringyLayout(g) {
 
   const originalTick = layout.tick;
   layout.tick = function(ts) {
-    repulseOverlappingBoxes.call(layout, ts);
+    if (this.repulseOverlappingBoxes) {
+      this.repulseOverlappingBoxes.call(layout, ts);
+    }
     originalTick.call(layout, ts);
   }
 
