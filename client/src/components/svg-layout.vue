@@ -28,7 +28,7 @@
 
 <style scoped>
   .animate {
-    transition: transform 0.5s ease; 
+    transition: transform 0.5s ease;
   }
 </style>
 
