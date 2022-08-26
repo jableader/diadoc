@@ -48,12 +48,12 @@ function repulseOverlappingBoxes() {
         
         let delta = m1.subtract(m2);
         if (delta.x == 0 && delta.y == 0) {
-          delta = new Vector(1, 0);
+          delta = new Vector(1, 1);
         }
         
         let direction = delta.normalise();
         let weight = new Vector(direction.x * b1.w, direction.y * b1.h);
-        let force = weight.multiply(this.repulsion);
+        let force = weight.multiply(p2.v.magnitude());
 
         p1.applyForce(force);
         p2.applyForce(force.multiply(-1));
@@ -64,11 +64,10 @@ function repulseOverlappingBoxes() {
 
 function runGraphLayout(layout, id) {
   const limit = 100;
+  layout.repulseOverlappingBoxes = repulseOverlappingBoxes;
   for (var i = 0, energy = 9999; i < limit && energy > 0.01; i++) {
     layout.tick(0.03);
     energy = layout.totalEnergy();
-    if (energy < 1 || i > 0.5 * limit)
-      layout.repulseOverlappingBoxes = repulseOverlappingBoxes;
   }
   console.log(id, i);
 }
@@ -79,7 +78,7 @@ function getSpringyLayout(g) {
   const xTop = boxes.reduce((s, b) => s + b.w, 0);
   const largestDim = boxes.reduce((m, b) => Math.max(m, b.w, b.h), 0);
 
-  const layout = new Springy.Layout.ForceDirected(g, 0, largestDim, 0.1, 0, 10 * largestDim);
+  const layout = new Springy.Layout.ForceDirected(g, 400.0, 400.0, 0.1, 0, 10 * largestDim);
   for (const n of g.nodes) {
     const p = new Springy.Vector(Math.random() * xTop, Math.random() * yTop);
     layout.nodePoints[n.id] = new Springy.Layout.ForceDirected.Point(p, 1);
