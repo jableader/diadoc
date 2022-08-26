@@ -20,10 +20,6 @@ def meta_file(reference_dir):
 def _get_or_create_index(dir):
     return index.create_in(dir, SCHEMA)
 
-class Result:
-    def __init__(self, path, caption):
-        self.path = path
-        self.caption = caption
 
 class Indexer:
     def __init__(self, index_dir, reference_dir):
@@ -79,7 +75,7 @@ class Indexer:
             query = q.parse(text)
             results = searcher.search(query)
 
-            return [Result(r['path'], r['caption']) for r in results]
+            return [dict(r) for r in results]
 
     def suggest(self, text):
         prompt = text.split(' ')[-1]
