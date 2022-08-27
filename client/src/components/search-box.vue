@@ -5,16 +5,18 @@
             ref="searchBox"
             placeholder="Enter a search term"
             v-model="searchTerm"
+            @keyup.enter="() => requestSearch()"
+            @keyup.esc="$event.target.blur()"
             @focus="startedTyping"
             @blur="stoppedTyping"
-            @keyup="onSearchboxKeyup" />
+            @input="requestSuggestionRefresh" />
 
         <div
             class="search-droplist"
             v-if="isTyping && searchTerm.length >= 3">
             <ul>
                 <li v-for="item in suggestions" 
-                    :key="uniqueSearchKey(item)" 
+                    :key="uniqueSearchKey(item)"
                     @click="requestSearch(item)">
                     {{ item }}
                 </li>
@@ -83,32 +85,12 @@ export default {
         uniqueSearchKey(item) {
             return item.table + (item.column ? '.' + item.column : '');
         },
-        onSearchboxKeyup(ev) {
-            if (ev.keyCode == 13) // Enter key
-                this.requestSearch(this.searchTerm);
-            else
-                this.requestSuggestionRefresh();
-        },
         requestSuggestionRefresh() {
-            const suggest = (function() {
-                if (this.searchTerm === this.previousSearchTerm)
-                    return;
+            if (this.searchTerm === this.previousSearchTerm)
+                return;
 
-                this.lastSuggestionUpdate = Date.now();
-                this.previousSearchTerm = this.searchTerm;
-                this.$emit('update-suggestions', this.searchTerm);
-            }).bind(this);
-
-            var now = Date.now();
-            var millisSinceLastUpdate = now - this.lastSuggestionUpdate;
-            if (millisSinceLastUpdate > this.debounceMillis) {
-                suggest();
-            } else if (!this.updateTimeout) {
-                this.updateTimeout = setTimeout(function() {
-                    this.updateTimeout = 0;
-                    suggest();
-                }, this.debounceMillis - millisSinceLastUpdate);
-            }
+            this.previousSearchTerm = this.searchTerm;
+            this.$emit('update-suggestions', this.searchTerm);
         },
         stoppedTyping() {
             function f() {
@@ -127,8 +109,8 @@ export default {
             this.isTyping = true;
         },
         requestSearch(term) {
-            this.searchTerm = term;
-            this.$emit('search-requested', term);
+            this.searchTerm = term ?? this.searchTerm;
+            this.$emit('search-requested', this.searchTerm);
             this.stoppedTyping();
         }
     }
