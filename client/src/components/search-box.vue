@@ -10,8 +10,8 @@
             @keyup.down="highlighted++"
             @keyup.up="highlighted--"
             @keydown.tab.prevent="tabEvent"
-            @focus="startedTyping"
-            @blur="stoppedTyping"
+            @focus="isTyping = true"
+            @blur="isTyping = false"
             @input="requestSuggestionRefresh" />
 
         <div
@@ -103,23 +103,6 @@ export default {
                 return;
 
             this.searchTerm = this.suggestions[this.highlighted % this.suggestions.length];
-        },
-        stoppedTyping() {
-            function f() {
-                this.isTyping = false;
-                this.typingTimeout = 0;
-            }
-
-            this.typingTimeout = setTimeout(f.bind(this), 250);
-        },
-        startedTyping() {
-            if (this.typingTimeout) {
-                clearInterval(this.typingTimeout);
-                this.typingTimeout = 0;
-            }
-
-            this.isTyping = true;
-            this.requestSuggestionRefresh()
         },
         requestSearch(term) {
             if (term)
