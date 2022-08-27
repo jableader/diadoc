@@ -8,6 +8,7 @@ from whoosh import index
 from whoosh.qparser import QueryParser
 from whoosh.analysis import RegexTokenizer, LowercaseFilter
 from whoosh.fields import Schema, TEXT, ID
+from whoosh.sorting import TranslateFacet, FieldFacet
 
 SCHEMA = Schema(
         content=TEXT,
@@ -30,6 +31,9 @@ def meta_file(reference_dir):
 def _get_or_create_index(dir):
     return index.create_in(dir, SCHEMA)
 
+def _sort_key(path):
+    # First 3 chars are the depth, then alphabetical
+    return u'%03d%s' % (path.count(b'/'), path)
 
 class Indexer:
     def __init__(self, index_dir, reference_dir):
@@ -83,7 +87,9 @@ class Indexer:
         with self.idx.searcher() as searcher:
             q = QueryParser("content", schema=SCHEMA)
             query = q.parse(text)
-            results = searcher.search(query, sortedby="path")
+
+            sort = TranslateFacet(_sort_key, FieldFacet('path'))
+            results = searcher.search(query, sortedby=sort)
 
             return [dict(r) for r in results]
 

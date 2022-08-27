@@ -101,6 +101,14 @@ class TestIndexer(unittest.TestCase):
         self.assertGreaterEqual(len(results), 1)
         self.assertEqual(results[0]['path'], '/first-lan')
 
+    def test_prefer_low_depth_over_alphabetical(self):
+        self.idx.index_dir('')
+        results = [r['path'] for r in self.idx.search("path:server")]
+
+        self.assertEqual(results[0], '/first-lan/server')
+        self.assertEqual(results[1], '/first-lan/server/docker')
+        self.assertEqual(results[2], '/first-lan/server/filesystem')
+
 
 if __name__ == '__main__':
     unittest.main()
