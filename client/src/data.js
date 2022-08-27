@@ -1,6 +1,22 @@
 import graph from './graph'
 
-var __referenceMetaData = null;
+const lazyFetch = function(url) {
+    let result = null;
+    return function() {
+        if (result !== null)
+            return new Promise((r) => r(result))
+
+        return fetch(url)
+            .then(r => r.json())
+            .then(function(m) {
+                result = m;
+                return m;
+            });
+    }
+};
+
+var __referenceMetaData = lazyFetch('/reference/meta.json');
+var __lexicon = lazyFetch('/lexicon');
 
 function searchForIds(searchQuery) {
     return fetch('/search?query=' + encodeURIComponent(searchQuery))
@@ -9,36 +25,29 @@ function searchForIds(searchQuery) {
 }
 
 function getSuggestions(text) {
-    return fetch('/suggest?prompt=' + encodeURIComponent(text))
-        .then(r => r.json())
+    const lastWordIndex = text.lastIndexOf(' ');
+    const lastWord = lastWordIndex > 0 ? text.substring(lastWordIndex) : text;
+    const preceedingWords = lastWordIndex > 0 ? text.substring(0, lastWordIndex) : '';
+
+    return __lexicon()
+        .then(function(allwords) {
+            return allwords
+                .filter(word => word.indexOf(lastWord) >= 0)
+                .map(word => preceedingWords + word)
+        });
 }
 
 export default {
     searchSuggestions(text) {
-        if (!__referenceMetaData)
-            return [];
-
         return getSuggestions(text)
     },
 
     searchResults(text) {
-        if (!__referenceMetaData)
-            return [];
-
         return searchForIds(text);
     },
 
     fetchReferenceMetadata() {
-        if (__referenceMetaData) {
-            return new Promise((r) => r(__referenceMetaData))
-        }
-
-        return fetch('/reference/meta.json')
-            .then(r => r.json())
-            .then(function(m) {
-                __referenceMetaData = m;
-                return m;
-            });
+        return __referenceMetaData();
     },
 
     fetchReference(id) {
