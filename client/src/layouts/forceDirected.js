@@ -30,7 +30,7 @@ function boxOf(node, point) {
 }
 
 function mid(box) {
-  return new Springy.Vector(box.x + box.w / 2, box.y + box.h / 2);
+  return new Vector(box.x + box.w / 2, box.y + box.h / 2);
 }
 
 function repulseOverlappingBoxes() {
@@ -78,9 +78,9 @@ function getSpringyLayout(g) {
   const xTop = boxes.reduce((s, b) => s + b.w, 0);
   const largestDim = boxes.reduce((m, b) => Math.max(m, b.w, b.h), 0);
 
-  const layout = new Springy.Layout.ForceDirected(g, 400.0, 400.0, 0.1, 0, 10 * largestDim);
+  const layout = new Springy.Layout.ForceDirected(g, 0.01 * largestDim, largestDim, 0.1, 0, 10 * largestDim);
   for (const n of g.nodes) {
-    const p = new Springy.Vector(Math.random() * xTop, Math.random() * yTop);
+    const p = new Vector(Math.random() * xTop, Math.random() * yTop);
     layout.nodePoints[n.id] = new Springy.Layout.ForceDirected.Point(p, 1);
   }
 
