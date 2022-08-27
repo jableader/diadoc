@@ -6,10 +6,11 @@ import json
 import whoosh
 from whoosh import index
 from whoosh.qparser import QueryParser
+from whoosh.analysis import RegexTokenizer, LowercaseFilter
 from whoosh.fields import Schema, TEXT, ID
 
 SCHEMA = Schema( \
-        path=ID(stored=True, unique=True, field_boost=2.0), \
+        path=ID(stored=True, unique=True, field_boost=2.0, analyzer=RegexTokenizer(r'[^\/]+') | LowercaseFilter()), \
         caption=TEXT(stored=True), \
         content=TEXT)
 
@@ -23,8 +24,6 @@ def meta_file(reference_dir):
 def _get_or_create_index(dir):
     return index.create_in(dir, SCHEMA)
 
-def _path_index(path):
-    return path.strip('/').replace('/', ' ')
 
 class Indexer:
     def __init__(self, index_dir, reference_dir):
@@ -71,7 +70,7 @@ class Indexer:
         content = self._read_reference_document(path)
 
         writer = self.idx.writer()
-        writer.add_document(caption=caption, content=content, path=_path_index(path), _stored_path=path)
+        writer.add_document(caption=caption, content=content, path=path)
         writer.commit()
 
     def search(self, text):

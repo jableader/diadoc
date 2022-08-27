@@ -7,6 +7,12 @@ from os import path
 
 from indexer import *
 
+def all_substrings_in(s, subs):
+    for sub in subs:
+        if sub not in s:
+            return False
+    return True
+
 class TestIndexer(unittest.TestCase):
     def test(self):
         self.assertTrue(True)
@@ -71,12 +77,23 @@ class TestIndexer(unittest.TestCase):
         results = self.idx.search('convicia')
         self.assertEqual(len(results), 3)
 
-    def test_lexicon_items(self):
+    def test_lexicon_items_includes_content(self):
         self.idx.index_dir('/')
         results = self.idx.lexicon()
         self.assertIn(u'lorem', results)
         self.assertIn(u'wan', results)
-        self.assertIn(u'internet', results)
+    
+    def test_lexicon_items_includes_path(self):
+        self.idx.index_dir('/')
+        results = self.idx.lexicon()
+
+        path_components = u'first-lan/server/docker'.split('/')
+        for p in path_components:
+            self.assertIn(p, results)
+
+        for r in results:
+            self.assertFalse(all_substrings_in(r, path_components), msg=f"Dodgy looking token: '{r}'")
+
 
 if __name__ == '__main__':
     unittest.main()
