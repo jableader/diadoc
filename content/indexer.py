@@ -31,9 +31,10 @@ class Indexer:
 
     def meta_for_file(self, path):
         node = self.meta
-        for p in dirname(path.strip('/')).split('/'):
+        parts = path.strip('/').split('/')
+        for p in parts:
             if not p in node:
-                raise Exception(f"Path not in metadata: '{path}', at '{p}'")
+                raise Exception(f"Path not in metadata: '{path}', at '{p}' in {str(parts)}")
 
             node = node[p]
         return node['__meta'] if '__meta' in node else None
@@ -47,15 +48,14 @@ class Indexer:
         return filepath[len(self.reference_dir):]
 
     def _read_reference_document(self, path):
-        return read_file(self._ref_to_filepath(path))
+        return read_file(join(self._ref_to_filepath(path), 'self.md'))
 
     def index_dir(self, path):
         for fileroot, dirs, files in walk(self._ref_to_filepath(path)):
             refroot = self._filepath_to_ref(fileroot)
-
-            for file in files:
-                if file.endswith(".md"):
-                    self.index(join(refroot, file))            
+            
+            if 'self.md' in files:
+                self.index(refroot)
 
     def index(self, path):
         if not path.startswith('/'):

@@ -23,34 +23,34 @@ class TestIndexer(unittest.TestCase):
         self.assertEqual(len(self.idx.suggest("hello")), 0)
 
     def test_indexed_search_caption(self):
-        self.idx.index('/internet/self.md')
+        self.idx.index('/internet')
         
         results = self.idx.search('WAN')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
 
     def test_indexed_search_content(self):
-        self.idx.index('/internet/self.md')
+        self.idx.index('/internet')
 
         results = self.idx.search('aversum')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
 
     def test_indexed_search_multitoken_adjacent(self):
-        self.idx.index('/internet/self.md')
+        self.idx.index('/internet')
 
         results = self.idx.search('suspirat aversum')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
-        self.assertEqual('/internet/self.md', results[0]['path'])
+        self.assertEqual('/internet', results[0]['path'])
 
     def test_indexed_search_multitoken_notadjacent(self):
-        self.idx.index('/internet/self.md')
+        self.idx.index('/internet')
 
         results = self.idx.search('convicia aversum')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
-        self.assertEqual('/internet/self.md', results[0]['path'])
+        self.assertEqual('/internet', results[0]['path'])
 
     def test_indexed_dir(self):
         self.idx.index_dir('internet')
@@ -58,7 +58,7 @@ class TestIndexer(unittest.TestCase):
         results = self.idx.search('convicia')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
-        self.assertEqual('/internet/self.md', results[0]['path'])
+        self.assertEqual('/internet', results[0]['path'])
 
     def test_indexed_dir_nested(self):
         self.idx.index_dir('/')

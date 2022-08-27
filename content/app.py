@@ -20,11 +20,21 @@ def fetch_resource(path):
 @app.route('/search')
 def search():
     global INDEXER
+    if 'query' not in request.args:
+        return "Missing query param", 400
+
+    query = request.args.get('query')
+    return INDEXER.search(query)
+
+@app.route('/suggest')
+def suggest():
+    global INDEXER
     if 'prompt' not in request.args:
         return "Missing prompt param", 400
 
     prompt = request.args.get('prompt')
-    return INDEXER.search(prompt)
+    return INDEXER.suggest(prompt)
+
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description="Serve & Index Documents")
