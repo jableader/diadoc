@@ -69,14 +69,16 @@ export default {
   },
   methods: {
     search(item) {
-      this.searchResults = data.searchResults(item);
+      data.searchResults(item)
+        .then(r => this.searchResults = r);
     },
     showReference(id) {
       this.searchResults = null;
       this.selectedReferenceId = id;
     },
     updateSearchSuggestions(text) {
-      this.searchSuggestions = data.searchSuggestions(text);
+      data.searchSuggestions(text)
+        .then(r => this.searchSuggestions = r);
     },
   }
 }
