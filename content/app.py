@@ -26,15 +26,6 @@ def search():
     query = request.args.get('query')
     return INDEXER.search(query)
 
-@app.route('/suggest')
-def suggest():
-    global INDEXER
-    if 'prompt' not in request.args:
-        return "Missing prompt param", 400
-
-    prompt = request.args.get('prompt')
-    return INDEXER.suggest(prompt)
-
 @app.route('/lexicon')
 def lexicon():
     global INDEXER

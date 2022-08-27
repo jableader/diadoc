@@ -71,16 +71,6 @@ class TestIndexer(unittest.TestCase):
         results = self.idx.search('convicia')
         self.assertEqual(len(results), 3)
 
-    def test_suggest_items(self):
-        self.idx.index_dir('/')
-        results = self.idx.suggest(u'lore')
-        self.assertIn('lorem', results)
-
-    def test_suggest_keeps_preceeding_text(self):
-        self.idx.index_dir('/')
-        results = self.idx.suggest(u'whatevs something lore')
-        self.assertIn('whatevs something lorem', results)
-
     def test_lexicon_items(self):
         self.idx.index_dir('/')
         results = self.idx.lexicon()

@@ -8,7 +8,10 @@ from whoosh import index
 from whoosh.qparser import QueryParser
 from whoosh.fields import Schema, TEXT, ID
 
-SCHEMA = Schema(caption=TEXT(stored=True), path=ID(stored=True), content=TEXT)
+SCHEMA = Schema( \
+        path=ID(stored=True, unique=True, field_boost=2.0), \
+        caption=TEXT(stored=True), \
+        content=TEXT)
 
 def read_file(path):
     with open(path, 'r', errors='ignore') as f:
@@ -78,18 +81,6 @@ class Indexer:
             results = searcher.search(query)
 
             return [dict(r) for r in results]
-
-    def suggest(self, text):
-        prompt = text.split(' ')[-1]
-        prev_terms = text[:-len(prompt)]
-
-        results = []
-        with self.idx.searcher() as searcher:
-            for word in searcher.lexicon('content'):
-                word = word.decode('utf8')
-                if prompt in word:
-                    results.append(prev_terms + word)
-        return results
 
     def lexicon(self):
         with self.idx.searcher() as searcher:
