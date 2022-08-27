@@ -11,7 +11,7 @@ from whoosh.fields import Schema, TEXT, ID
 SCHEMA = Schema(caption=TEXT(stored=True), path=ID(stored=True), content=TEXT)
 
 def read_file(path):
-    with open(path, 'r') as f:
+    with open(path, 'r', errors='ignore') as f:
         return f.read()
 
 def meta_file(reference_dir):
