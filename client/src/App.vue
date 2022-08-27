@@ -17,7 +17,7 @@
         <div style="width: 60%;max-width: 600px;display: inline-block">
           <search-box :suggestions="searchSuggestions" 
                       @update-suggestions="updateSearchSuggestions"
-                      @item-selected="search" />
+                      @search-requested="search" />
         </div>
     </div>
 

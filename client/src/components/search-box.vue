@@ -15,7 +15,7 @@
             <ul>
                 <li v-for="item in suggestions" 
                     :key="uniqueSearchKey(item)" 
-                    @click="suggestionSelected(item)">
+                    @click="requestSearch(item)">
                     {{ item }}
                 </li>
             </ul>
@@ -84,13 +84,13 @@ export default {
             return item.table + (item.column ? '.' + item.column : '');
         },
         onSearchboxKeyup(ev) {
-            if (ev.keyCode == 13 && this.suggestions.length > 0) // Enter key
-                this.suggestionSelected(this.searchTerm);
+            if (ev.keyCode == 13) // Enter key
+                this.requestSearch(this.searchTerm);
             else
                 this.requestSuggestionRefresh();
         },
         requestSuggestionRefresh() {
-            const search = (function() {
+            const suggest = (function() {
                 if (this.searchTerm === this.previousSearchTerm)
                     return;
 
@@ -102,11 +102,11 @@ export default {
             var now = Date.now();
             var millisSinceLastUpdate = now - this.lastSuggestionUpdate;
             if (millisSinceLastUpdate > this.debounceMillis) {
-                search();
+                suggest();
             } else if (!this.updateTimeout) {
                 this.updateTimeout = setTimeout(function() {
                     this.updateTimeout = 0;
-                    search();
+                    suggest();
                 }, this.debounceMillis - millisSinceLastUpdate);
             }
         },
@@ -126,9 +126,9 @@ export default {
 
             this.isTyping = true;
         },
-        suggestionSelected(item) {
-            this.searchTerm = item;
-            this.$emit('item-selected', item);
+        requestSearch(term) {
+            this.searchTerm = term;
+            this.$emit('search-requested', term);
             this.stoppedTyping();
         }
     }
