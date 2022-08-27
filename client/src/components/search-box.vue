@@ -7,6 +7,8 @@
             v-model="searchTerm"
             @keyup.enter="() => requestSearch()"
             @keyup.esc="$event.target.blur()"
+            @keyup.down="highlighted++"
+            @keyup.up="highlighted--"
             @focus="startedTyping"
             @blur="stoppedTyping"
             @input="requestSuggestionRefresh" />
@@ -15,8 +17,9 @@
             class="search-droplist"
             v-if="isTyping && searchTerm.length >= 3">
             <ul>
-                <li v-for="item in suggestions" 
+                <li v-for="(item, index) in suggestions" 
                     :key="uniqueSearchKey(item)"
+                    :class="{ highlight: index == (highlighted % suggestions.length) }"
                     @click="requestSearch(item)">
                     {{ item }}
                 </li>
@@ -39,6 +42,10 @@ li {
     list-style-type: none;
     padding-left: 10px;
     border-bottom: 1px solid gray;
+}
+
+li.highlight {
+    background-color: lightgray;
 }
 
 input[type=text] {
@@ -72,11 +79,8 @@ export default {
     data: function() {
         return {
             searchTerm: "",
-
+            highlighted: -1,
             previousSearchTerm: "",
-            lastSuggestionUpdate: 0,
-            updateTimeout: 0,
-
             isTyping: false,
             typingTimeout: 0,
         }
@@ -107,11 +111,17 @@ export default {
             }
 
             this.isTyping = true;
+            this.requestSuggestionRefresh()
         },
         requestSearch(term) {
-            this.searchTerm = term ?? this.searchTerm;
+            if (term)
+                this.searchTerm = term;
+            else if (this.highlighted >= 0)
+                this.searchTerm = this.suggestions[this.highlighted % this.suggestions.length];
+
+            this.highlighted = -1;
             this.$emit('search-requested', this.searchTerm);
-            this.stoppedTyping();
+            this.$refs["searchBox"].blur()
         }
     }
 }
