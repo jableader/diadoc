@@ -69,7 +69,6 @@ function runGraphLayout(layout, id) {
     layout.tick(0.03);
     energy = layout.totalEnergy();
   }
-  console.log(id, i);
 }
 
 function getSpringyLayout(g) {
@@ -114,19 +113,26 @@ function layout(id, ref, label, childShapes, style) {
     runGraphLayout(layout, id, g);
 
     var bbox = layout.getBoundingBox();
-    const translateX = bbox.bottomleft.x;
-    const translateY = bbox.bottomleft.y;
+    let xmin = Number.MAX_SAFE_INTEGER, ymin = Number.MAX_SAFE_INTEGER;
+    layout.eachNode(function(n, p) {
+      xmin = Math.min(p.p.x, xmin);
+      ymin = Math.min(p.p.y, ymin);
+    });
 
     layout.eachNode(function(n, p) {
-      n.data.shape.box.x = p.p.x - translateX;
-      n.data.shape.box.y = p.p.y - translateY;
+      const box = n.data.shape.box;
+
+      box.x = p.p.x - xmin;
+      box.y = p.p.y - ymin;
     });
+
+    const ymax = maxOf(childShapes, c => c.box.y + c.box.h);
+    const xmax = maxOf(childShapes, c => c.box.x + c.box.w);
     
-    const yMax = maxOf(childShapes, c => c.box.y + c.box.h);
-    const xMax = maxOf(childShapes, c => c.box.x + c.box.w);
-  
+    console.log(id.path, shapes, bbox, { bottomleft: { x: xmin, y: ymax }, topright: { x: xmax, y: ymin }});
+
     const padding = 5;
-    const children = new Shape.Children(childShapes, Shape.Box(padding, label.bottom + padding, xMax + 2 * padding, yMax + 2 * padding), 1);
+    const children = new Shape.Children(childShapes, Shape.Box(padding, label.bottom + padding, xmax + 2 * padding, ymax + 2 * padding), 1);
     const shapeBox = Shape.Box(
       0, 0,
       Math.max(label.box.w + label.box.x, children.box.w),
