@@ -9,6 +9,7 @@
             @keyup.esc="$event.target.blur()"
             @keyup.down="highlighted++"
             @keyup.up="highlighted--"
+            @keydown.tab.prevent="tabEvent"
             @focus="startedTyping"
             @blur="stoppedTyping"
             @input="requestSuggestionRefresh" />
@@ -20,7 +21,8 @@
                 <li v-for="(item, index) in suggestions" 
                     :key="uniqueSearchKey(item)"
                     :class="{ highlight: index == (highlighted % suggestions.length) }"
-                    @click="requestSearch(item)">
+                    @click="requestSearch(item)"
+                    @hover="highlighted=index">
                     {{ item }}
                 </li>
             </ul>
@@ -95,6 +97,12 @@ export default {
 
             this.previousSearchTerm = this.searchTerm;
             this.$emit('update-suggestions', this.searchTerm);
+        },
+        tabEvent() {
+            if (this.highlighted < 0)
+                return;
+
+            this.searchTerm = this.suggestions[this.highlighted % this.suggestions.length];
         },
         stoppedTyping() {
             function f() {
