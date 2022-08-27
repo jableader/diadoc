@@ -25,9 +25,9 @@ function searchForIds(searchQuery) {
 }
 
 function getSuggestions(text) {
-    const lastWordIndex = text.lastIndexOf(' ');
+    const lastWordIndex = text.lastIndexOf(' ') + 1;
     const lastWord = lastWordIndex > 0 ? text.substring(lastWordIndex).toLowerCase() : text.toLowerCase();
-    const preceedingWords = lastWordIndex > 0 ? text.substring(0, lastWordIndex + 1) : '';
+    const preceedingWords = lastWordIndex > 0 ? text.substring(0, lastWordIndex) : '';
 
     return __lexicon()
         .then(function(allwords) {
