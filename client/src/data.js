@@ -26,13 +26,15 @@ function searchForIds(searchQuery) {
 
 function getSuggestions(text) {
     const lastWordIndex = text.lastIndexOf(' ');
-    const lastWord = lastWordIndex > 0 ? text.substring(lastWordIndex) : text;
+    const lastWord = lastWordIndex > 0 ? text.substring(lastWordIndex).toLowerCase() : text.toLowerCase();
     const preceedingWords = lastWordIndex > 0 ? text.substring(0, lastWordIndex + 1) : '';
 
     return __lexicon()
         .then(function(allwords) {
             return allwords
                 .filter(word => word.indexOf(lastWord) >= 0)
+                .sort((a, b) => a.indexOf(text) - b.indexOf(text))
+                .slice(0, 20)
                 .map(word => preceedingWords + word)
         });
 }
