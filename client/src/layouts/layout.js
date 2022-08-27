@@ -38,7 +38,7 @@ function shapes(id, ref) {
     return new Shapes.Shape(id, label, Shapes.Box(0, 0, w + x, y + h), new Shapes.Children([], Shapes.Box(0,0,0,0), 1), style);
   }
 
-  return layouts[meta.layout ?? "springy"](id, ref, label, childShapes, style);
+  return layouts[meta?.layout ?? "springy"](id, ref, label, childShapes, style);
 }
 
 export default { shapes }
