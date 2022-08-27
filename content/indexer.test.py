@@ -36,6 +36,12 @@ class TestIndexer(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
 
+    def test_indexed_search_noresult(self):
+        self.idx.index('/internet')
+
+        results = self.idx.search('asdsajkndklandjksd')
+        self.assertEqual(len(results), 0)
+
     def test_indexed_search_multitoken_adjacent(self):
         self.idx.index('/internet')
 
