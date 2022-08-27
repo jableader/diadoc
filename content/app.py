@@ -35,6 +35,11 @@ def suggest():
     prompt = request.args.get('prompt')
     return INDEXER.suggest(prompt)
 
+@app.route('/lexicon')
+def lexicon():
+    global INDEXER
+
+    return INDEXER.lexicon()
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description="Serve & Index Documents")

@@ -20,7 +20,7 @@ class TestIndexer(unittest.TestCase):
 
     def test_search_no_docs(self):
         self.assertEqual(len(self.idx.search("hello world")), 0)
-        self.assertEqual(len(self.idx.suggest("hello")), 0)
+        self.assertEqual(len(self.idx.lexicon()), 0)
 
     def test_indexed_search_caption(self):
         self.idx.index('/internet')
@@ -80,6 +80,13 @@ class TestIndexer(unittest.TestCase):
         self.idx.index_dir('/')
         results = self.idx.suggest(u'whatevs something lore')
         self.assertIn('whatevs something lorem', results)
+
+    def test_lexicon_items(self):
+        self.idx.index_dir('/')
+        results = self.idx.lexicon()
+        self.assertIn(u'lorem', results)
+        self.assertIn(u'wan', results)
+        self.assertIn(u'internet', results)
 
 if __name__ == '__main__':
     unittest.main()

@@ -20,6 +20,8 @@ def meta_file(reference_dir):
 def _get_or_create_index(dir):
     return index.create_in(dir, SCHEMA)
 
+def _path_index(path):
+    return path.strip('/').replace('/', ' ')
 
 class Indexer:
     def __init__(self, index_dir, reference_dir):
@@ -66,7 +68,7 @@ class Indexer:
         content = self._read_reference_document(path)
 
         writer = self.idx.writer()
-        writer.add_document(caption=caption, content=content, path=path)
+        writer.add_document(caption=caption, content=content, path=_path_index(path), _stored_path=path)
         writer.commit()
 
     def search(self, text):
@@ -88,3 +90,11 @@ class Indexer:
                 if prompt in word:
                     results.append(prev_terms + word)
         return results
+
+    def lexicon(self):
+        with self.idx.searcher() as searcher:
+            all_words = []
+            all_words.extend(searcher.lexicon('content'))
+            all_words.extend(searcher.lexicon('path'))
+
+            return [word.decode('utf8') for word in all_words]
