@@ -31,6 +31,7 @@ export default {
     components: {
         ReferenceDocumentation
     },
+    emits: ['reference-requested', 'close'],
     props: {
         sourceId: {
             type: Object,

@@ -87,6 +87,7 @@ function centerElement(box, panZoom){
 
 export default {
   components: { svgBox },
+  emits: ['shape-selected'],
   props: {
       shapes: {
           type: [Object, null], // Graph of items

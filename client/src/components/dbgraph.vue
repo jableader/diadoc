@@ -36,6 +36,7 @@ export default {
   components: {
     'svg-layout': SvgLayout
   },
+  emits: ['reference-requested'],
   props: {
       reference: {
           type: [Object, null],
