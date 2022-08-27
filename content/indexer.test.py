@@ -94,6 +94,13 @@ class TestIndexer(unittest.TestCase):
         for r in results:
             self.assertFalse(all_substrings_in(r, path_components), msg=f"Dodgy looking token: '{r}'")
 
+    def test_search_by_path(self):
+        self.idx.index_dir('/first-lan')
+        results = self.idx.search('path:/first-lan')
+
+        self.assertGreaterEqual(len(results), 1)
+        self.assertEqual(results[0]['path'], '/first-lan')
+
 
 if __name__ == '__main__':
     unittest.main()

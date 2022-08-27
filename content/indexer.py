@@ -9,10 +9,16 @@ from whoosh.qparser import QueryParser
 from whoosh.analysis import RegexTokenizer, LowercaseFilter
 from whoosh.fields import Schema, TEXT, ID
 
-SCHEMA = Schema( \
-        path=ID(stored=True, unique=True, field_boost=2.0, analyzer=RegexTokenizer(r'[^\/]+') | LowercaseFilter()), \
-        caption=TEXT(stored=True), \
-        content=TEXT)
+SCHEMA = Schema(
+        content=TEXT,
+        caption=TEXT(stored=True),
+        path=ID(
+            stored=True,
+            unique=True,
+            field_boost=2.0,
+            sortable=True,
+            analyzer=RegexTokenizer(r'[^\/]+') | LowercaseFilter())
+        )
 
 def read_file(path):
     with open(path, 'r', errors='ignore') as f:
@@ -77,7 +83,7 @@ class Indexer:
         with self.idx.searcher() as searcher:
             q = QueryParser("content", schema=SCHEMA)
             query = q.parse(text)
-            results = searcher.search(query)
+            results = searcher.search(query, sortedby="path")
 
             return [dict(r) for r in results]
 
