@@ -13,7 +13,7 @@ class TestIndexer(unittest.TestCase):
 
     def setUp(self):
         self.index_dir = tempfile.mkdtemp()
-        self.idx = Indexer(self.index_dir, './reference/lan')
+        self.idx = Indexer(self.index_dir, './test-reference/lan')
 
     def tearDown(self):
         shutil.rmtree(self.index_dir)

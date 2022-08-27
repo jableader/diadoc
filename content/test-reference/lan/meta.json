@@ -1,0 +1,129 @@
+{
+  "__meta": {
+    "viewbox": {
+      "w": 1260,
+      "h": 650
+    }
+  },
+  "internet": {
+    "__meta": {
+      "caption": "\ud83c\udf10 WAN"
+    }
+  },
+  "first-lan": {
+    "__meta": {
+      "caption": "\ud83d\udda7 LAN #1",
+      "links": [
+        {
+          "to": "/internet"
+        }
+      ]
+    },
+    "server": {
+      "__meta": {
+        "caption": "\ud83d\udda5 Server",
+        "viewbox": {
+          "w": 900,
+          "h": 400
+        }
+      },
+      "filesystem": {
+        "__meta": {
+          "caption": "\ud83d\udcc1 MergerFS",
+          "layout": "stack"
+        },
+        "wd": {
+          "__meta": {
+            "caption": "\ud83d\uddb4 WD 4Tb"
+          }
+        },
+        "seagate": {
+          "__meta": {
+            "caption": "\ud83d\uddb4 Seagate 4Tb HDD"
+          }
+        }
+      },
+      "docker": {
+        "__meta": {
+          "layout": "springy",
+          "caption": "Docker Images",
+          "viewbox": {
+            "w": 500,
+            "h": 350
+          },
+          "links": [
+            {
+              "to": "/first-lan/server/filesystem"
+            }
+          ]
+        },
+        "vpn-out": {
+          "__meta": {
+            "caption": "\ud83d\udd10 VPN Client"
+          }
+        },
+        "qbittorrent": {
+          "__meta": {
+            "caption": "\u2b73 QBittorrent",
+            "links": [
+              {
+                "to": "/first-lan/server/docker/vpn-out"
+              }
+            ]
+          }
+        },
+        "jackett": {
+          "__meta": {
+            "caption": "\ud83d\udd0d Jackett",
+            "links": [
+              {
+                "to": "/first-lan/server/docker/vpn-out"
+              }
+            ]
+          }
+        },
+        "sonarr": {
+          "__meta": {
+            "caption": "\ud83d\udcfa Sonarr",
+            "links": [
+              {
+                "to": "/first-lan/server/docker/qbittorrent"
+              },
+              {
+                "to": "/first-lan/server/docker/jackett"
+              }
+            ]
+          }
+        },
+        "radarr": {
+          "__meta": {
+            "caption": "\ud83c\udf7f Radarr",
+            "links": [
+              {
+                "to": "/first-lan/server/docker/qbittorrent"
+              },
+              {
+                "to": "/first-lan/server/docker/jackett"
+              }
+            ]
+          }
+        },
+        "plex": {
+          "__meta": {
+            "caption": "\u25b6 Plex"
+          }
+        }
+      }
+    },
+    "desktop": {
+      "__meta": {
+        "caption": "\ud83d\uddb3 PopOS!"
+      }
+    },
+    "laptop": {
+      "__meta": {
+        "caption": "\ud83d\udcbb PopOS!"
+      }
+    }
+  }
+}
