@@ -77,8 +77,19 @@ export default {
       this.selectedReferenceId = id;
     },
     updateSearchSuggestions(text) {
-      data.searchSuggestions(text)
-        .then(r => this.searchSuggestions = r);
+      if (/[:"'*()]/g.test(text)) {
+        this.searchSuggestions = [
+          "Some whoosh query samples for advanced searches",
+          "(foo OR bar) AND (baz OR bing)",
+          "foo* b?r",
+          "path:'/foo/bar'",
+          "caption:food AND yum"
+        ]
+      }
+      else {
+        data.searchSuggestions(text)
+          .then(r => this.searchSuggestions = r);
+      }
     },
   }
 }
