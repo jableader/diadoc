@@ -1,0 +1,10 @@
+services:
+  frontend:
+    build: ./client
+    ports:
+      - 8080:8080
+
+  backend:
+    build: ./content
+    ports:
+      - 5000:5000
