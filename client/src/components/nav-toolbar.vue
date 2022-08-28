@@ -3,14 +3,14 @@
         <div class="tooltip secondary secondary-border" v-if="tooltip">{{ tooltip }}</div>
         <div class="toolbar-components">
             <button 
-                @mouseenter="ev => showTooltip(ev, 'Recenter the graph on screen')" 
-                @mouseleave="hideTooltip"
+                @mouseenter="tooltip='Recenter the graph on screen'" 
+                @mouseleave="tooltip=''"
                 @click="$emit('recenter')">
                     Recenter
             </button>
             <span class="transitionSpeed"
-                @mouseenter="ev => showTooltip(ev, 'Adjust speed of transitions')" 
-                @mouseleave="hideTooltip">
+                @mouseenter="tooltip='Adjust speed of transitions'" 
+                @mouseleave="tooltip=''">
                     <img src="/top-speed-svgrepo-com.svg" />
                     <input type="number" 
                         min="0"
@@ -74,13 +74,5 @@ export default {
             tooltip: '',
         }
     },
-    methods: {
-        showTooltip(ev, tooltip) {
-            this.tooltip = tooltip;
-        },
-        hideTooltip(ev) {
-            this.tooltip = '';
-        }
-    }
 }
 </script>
