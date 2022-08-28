@@ -3,8 +3,15 @@ import pathlib
 import indexer
 import os
 
+from flask_cors import CORS
 from flask import Flask, request, send_from_directory
 app = Flask(__name__)
+CORS(app)
+cors = CORS(app, resource={
+    r"/*":{
+        "origins":"*"
+    }
+})
 
 REFERENCE_PATH='/dev/null'
 INDEXER = None

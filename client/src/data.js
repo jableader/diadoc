@@ -1,12 +1,14 @@
 import graph from './graph'
 
+const content = process.env.CONFIG_URL ?? "http://localhost:5000";
+
 const lazyFetch = function(url) {
     let result = null;
     return function() {
         if (result !== null)
             return new Promise((r) => r(result))
 
-        return fetch(url)
+        return fetch(new URL(url, content))
             .then(r => r.json())
             .then(function(m) {
                 result = m;
@@ -19,7 +21,7 @@ var __referenceMetaData = lazyFetch('/reference/meta.json');
 var __lexicon = lazyFetch('/lexicon');
 
 function searchForIds(searchQuery) {
-    return fetch('/search?query=' + encodeURIComponent(searchQuery))
+    return fetch(new URL('/search?query=' + encodeURIComponent(searchQuery), content))
         .then(q => q.json())
         .then(results => results.map((r) => ({ id: graph.idForPath(r.path), snippet: r.caption })))
 }
@@ -90,7 +92,7 @@ export default {
             return new Promise((g, b) => b("Null id"));
         }
 
-        return fetch(`/reference/${id.path}/self.md`)
+        return fetch(new URL(`/reference/${id.path}/self.md`, content))
                 .then(r => r.text());
     },
 }
