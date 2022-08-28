@@ -12,7 +12,13 @@
                 @mouseenter="ev => showTooltip(ev, 'Adjust speed of transitions')" 
                 @mouseleave="hideTooltip">
                     <img src="/top-speed-svgrepo-com.svg" />
-                    <input type="number" :value="transitionSpeed" @input="ev => $emit('update-transition-speed', parseInt(ev.target.value))" />
+                    <input type="number" 
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        :value="transitionSpeed" 
+                        @input="ev => $emit('update-transition-speed', parseFloat(ev.target.value))" 
+                        />
             </span>
         </div>
     </div>

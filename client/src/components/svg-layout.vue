@@ -27,6 +27,8 @@
     </svg>
     <nav-toolbar 
       @recenter="recenter(true)"
+      :transition-speed="transitionSpeed"
+      @update-transition-speed="v => transitionSpeed = v"
       />
   </div>
 </template>
@@ -34,7 +36,7 @@
 <style scoped>
 
 .animate {
-  transition: transform 0.5s ease;
+  transition: v-bind('transition');
 }
 
 .container {
@@ -113,10 +115,13 @@ export default {
   computed:  {
     bboxes() {
       return allIds(this.shapes).map(id => Shape.trueBoundingBox(this.shapes, id))
+    },
+    transition() {
+      return `transform ${this.transitionSpeed}s ease`;
     }
   },
   data() {
-    return { recentering: false };
+    return { recentering: false, transitionSpeed: 1.5 };
   },
   watch: {
     selection(){
@@ -129,7 +134,6 @@ export default {
   },
   mounted() {
     this.recenter();
-    this.$emit('')
   },
   unmounted() {
     this.resetPanZoom()
