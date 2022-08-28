@@ -57,29 +57,31 @@
             }
           ]
         },
-        "vpn-out": {
-          "__meta": {
-            "caption": "\ud83d\udd10 VPN Client"
-          }
-        },
-        "qbittorrent": {
-          "__meta": {
-            "caption": "\u2b73 QBittorrent",
-            "links": [
-              {
-                "to": "/first-lan/server/docker/vpn-out"
-              }
-            ]
-          }
-        },
-        "jackett": {
-          "__meta": {
-            "caption": "\ud83d\udd0d Jackett",
-            "links": [
-              {
-                "to": "/first-lan/server/docker/vpn-out"
-              }
-            ]
+        "vpn": {
+          "vpn-out": {
+            "__meta": {
+              "caption": "\ud83d\udd10 VPN Client"
+            }
+          },
+          "qbittorrent": {
+            "__meta": {
+              "caption": "\u2b73 QBittorrent",
+              "links": [
+                {
+                  "to": "/first-lan/server/docker/vpn/vpn-out"
+                }
+              ]
+            }
+          },
+          "jackett": {
+            "__meta": {
+              "caption": "\ud83d\udd0d Jackett",
+              "links": [
+                {
+                  "to": "/first-lan/server/docker/vpn/vpn-out"
+                }
+              ]
+            }
           }
         },
         "sonarr": {
@@ -87,10 +89,10 @@
             "caption": "\ud83d\udcfa Sonarr",
             "links": [
               {
-                "to": "/first-lan/server/docker/qbittorrent"
+                "to": "/first-lan/server/docker/vpn/qbittorrent"
               },
               {
-                "to": "/first-lan/server/docker/jackett"
+                "to": "/first-lan/server/docker/vpn/jackett"
               }
             ]
           }
@@ -100,10 +102,10 @@
             "caption": "\ud83c\udf7f Radarr",
             "links": [
               {
-                "to": "/first-lan/server/docker/qbittorrent"
+                "to": "/first-lan/server/docker/vpn/qbittorrent"
               },
               {
-                "to": "/first-lan/server/docker/jackett"
+                "to": "/first-lan/server/docker/vpn/jackett"
               }
             ]
           }
