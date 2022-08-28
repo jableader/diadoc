@@ -26,31 +26,33 @@
                     "viewbox": {"w": 500, "h": 350},
                     "links": [{ "to": "/first-lan/server/filesystem"}]
                 },
-                "vpn-out": { 
-                    "__meta": { "caption": "🔐 VPN Client" }
-                },
-                "qbittorrent": { 
-                    "__meta": {
-                        "caption": "⭳ QBittorrent",
-                        "links": [
-                            { "to": "/first-lan/server/docker/vpn-out" }
-                        ]
-                    }
-                },
-                "jackett": {
-                    "__meta": {
-                        "caption": "🔍 Jackett",
-                        "links": [
-                            { "to": "/first-lan/server/docker/vpn-out" }
-                        ]
+                "vpn": {
+                    "vpn-out": { 
+                        "__meta": { "caption": "🔐 VPN Client" }
+                    },
+                    "qbittorrent": { 
+                        "__meta": {
+                            "caption": "⭳ QBittorrent",
+                            "links": [
+                                { "to": "/first-lan/server/docker/vpn/vpn-out" }
+                            ]
+                        }
+                    },
+                    "jackett": {
+                        "__meta": {
+                            "caption": "🔍 Jackett",
+                            "links": [
+                                { "to": "/first-lan/server/docker/vpn/vpn-out" }
+                            ]
+                        }
                     }
                 },
                 "sonarr": {
                     "__meta": {
                         "caption": "📺 Sonarr",
                         "links": [
-                            { "to": "/first-lan/server/docker/qbittorrent" },
-                            { "to": "/first-lan/server/docker/jackett" }
+                            { "to": "/first-lan/server/docker/vpn/qbittorrent" },
+                            { "to": "/first-lan/server/docker/vpn/jackett" }
                         ]
                     }
                 },
@@ -58,8 +60,8 @@
                     "__meta": {
                         "caption": "🍿 Radarr",
                         "links": [
-                            { "to": "/first-lan/server/docker/qbittorrent" },
-                            { "to": "/first-lan/server/docker/jackett" }
+                            { "to": "/first-lan/server/docker/vpn/qbittorrent" },
+                            { "to": "/first-lan/server/docker/vpn/jackett" }
                         ]
                     }
                 },
