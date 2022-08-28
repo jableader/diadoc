@@ -24,20 +24,48 @@ function searchForIds(searchQuery) {
         .then(results => results.map((r) => ({ id: graph.idForPath(r.path), snippet: r.caption })))
 }
 
+function getFallbackSuggestions(lastWord, preceedingWords) {
+    let advancedSearchSamples = [
+        `${lastWord}*`,
+        `*${lastWord}`,
+        `caption:${lastWord}`,
+        `path:'/${lastWord}'`,
+        `${lastWord}*`,
+        `*${lastWord}`
+    ]
+
+    if (preceedingWords) {
+        advancedSearchSamples.unshift(`OR ${lastWord}`);
+    }
+
+    if (lastWord.length >= 2) {
+        var midlen = Math.min(lastWord.length / 2, 3);
+        var firstHalf = lastWord.substring(0, midlen);
+        var secondHalf = lastWord.substring(lastWord.length - midlen);
+
+        advancedSearchSamples.unshift(`${firstHalf}*${secondHalf}`);
+    }
+
+    return advancedSearchSamples;
+}
+
 function getSuggestions(text) {
     const lastWordIndex = text.lastIndexOf(' ') + 1;
     const lastWord = lastWordIndex > 0 ? text.substring(lastWordIndex).toLowerCase() : text.toLowerCase();
     const preceedingWords = lastWordIndex > 0 ? text.substring(0, lastWordIndex) : '';
 
-    if (lastWord.length <= 1) {
-        return new Promise(r => r([]));
-    }
-
     return __lexicon()
         .then(function(allwords) {
+            const suggestedWord = lastWord ? lastWord : allwords[allwords.length / 2];
+            if (!preceedingWords && lastWord.length <= 1) {
+                return [];
+            }
+            
+            const fallback = getFallbackSuggestions(suggestedWord, preceedingWords);
             return allwords
                 .filter(word => word.indexOf(lastWord) >= 0)
                 .sort((a, b) => a.indexOf(text) - b.indexOf(text))
+                .concat(fallback)
                 .slice(0, 20)
                 .map(word => preceedingWords + word)
         });

@@ -48,14 +48,6 @@ import ResultsPanel from './components/results-panel.vue';
 import SearchBox from './components/search-box.vue'
 import data from './data';
 
-const searchHelp = [
-  "Some whoosh query samples for advanced searches",
-  "(foo OR bar) AND (baz OR bing)",
-  "foo* b?r",
-  "path:'/foo/bar'",
-  "caption:food AND yum"
-];
-
 export default {
   name: 'App',
   components: {
@@ -90,7 +82,7 @@ export default {
     },
     updateSearchSuggestions(text) {
       data.searchSuggestions(text)
-        .then(r => this.searchSuggestions = r?.length ? r : searchHelp);
+        .then(r => this.searchSuggestions = r);
     },
   }
 }
