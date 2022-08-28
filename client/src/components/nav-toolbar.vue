@@ -1,25 +1,27 @@
 <template>
     <div class="toolbar">
-        <div class="tooltip secondary secondary-border" v-if="tooltip">{{ tooltip }}</div>
-        <div class="toolbar-components">
-            <button 
-                @mouseenter="tooltip='Recenter the graph on screen'" 
-                @mouseleave="tooltip=''"
-                @click="$emit('recenter')">
-                    Recenter
-            </button>
-            <span class="transitionSpeed"
-                @mouseenter="tooltip='Adjust speed of transitions'" 
-                @mouseleave="tooltip=''">
-                    <img src="/top-speed-svgrepo-com.svg" />
-                    <input type="number" 
-                        min="0"
-                        max="10"
-                        step="0.5"
-                        :value="transitionSpeed" 
-                        @input="ev => $emit('update-transition-speed', parseFloat(ev.target.value))" 
-                        />
-            </span>
+        <div class="tooltip secondary secondary-border leftdock" v-if="tooltip">{{ tooltip }}</div>
+        <div>
+            <div class="toolbar-components primary leftdock">
+                <button 
+                    @mouseenter="tooltip='Recenter the graph on screen'" 
+                    @mouseleave="tooltip=''"
+                    @click="$emit('recenter')">
+                        Recenter
+                </button>
+                <span class="transitionSpeed"
+                    @mouseenter="tooltip='Adjust speed of transitions'" 
+                    @mouseleave="tooltip=''">
+                        <img src="/top-speed-svgrepo-com.svg" />
+                        <input type="number" 
+                            min="0"
+                            max="10"
+                            step="0.5"
+                            :value="transitionSpeed" 
+                            @input="ev => $emit('update-transition-speed', parseFloat(ev.target.value))" 
+                            />
+                </span>
+            </div>
         </div>
     </div>
 </template>
@@ -33,29 +35,43 @@
     }
 
     .toolbar-components {
+        display: inline-block;
+        width: auto;
         text-align: left;
-        vertical-align: center;
-        height: 32px;
     }
 
     .toolbar-components > * {
         display: inline-block;
-        max-height: 32px;
+        max-height: 32pt;
         vertical-align: middle;
-        margin-left: 1em;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
         margin-top: 0.5ex;
     }
 
     .transitionSpeed > * {
         vertical-align: middle;
-        max-width: 4em;
+        max-width: 3em;
     }
 
     .tooltip {
         padding: 0.5ex 0.5em;
-        border-top-right-radius: 10px;
-        border-bottom-right-radius: 10px;
-        background-color: white;
+    }
+
+    .leftdock {
+        border-top-right-radius: 5pt;
+        border-bottom-right-radius: 5pt;
+    }
+
+    .toolbar > div {
+        text-align: left;
+    }
+
+    .toolbar-components button {
+        border-radius: 5pt;
+        padding: 4pt;
+        margin-top: 2pt;
+        margin-bottom: 2pt;
     }
 
 </style>

@@ -18,6 +18,30 @@
     background-color: #625ad8;
 }
 
+.primary img {
+    filter: invert(100%)
+}
+
+.primary button {
+    background-color: #938edd;
+    border: none;
+    color: white;
+    box-shadow: 0 1px 0 0 white; /* Border bottom */
+    box-shadow: 0 -1px 0 0 white; /* Border top */
+    box-shadow: -1px 0 0 0 white; /* Border left */
+    box-shadow: 1px 0 0 0 white; /* Border right */
+    box-shadow: 0 0 0 1px white; /* All the borders by using the spread properties */
+}
+
+.primary button:hover {
+    font-weight: bolder;
+}
+
+.primary button:active {
+    font-weight: normal;
+    box-shadow: none;
+}
+
 .primary li :hover {
     background-color: #523ac8;
     color: white;
@@ -27,4 +51,5 @@
     border-color: #523ac8;
     border-width: thin;
     border-style: solid;
+    background-color: white;
 }
