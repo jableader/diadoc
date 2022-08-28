@@ -109,6 +109,13 @@ class TestIndexer(unittest.TestCase):
         self.assertEqual(results[1], '/first-lan/server/docker')
         self.assertEqual(results[2], '/first-lan/server/filesystem')
 
+    def test_meta_exists_without_indexed_fields(self):
+        self.idx.meta['internet']['__meta'] = {'whatever': None}
+        self.idx.index('/internet')
+        results = self.idx.search("wan")
+
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['path'], '/internet')
 
 if __name__ == '__main__':
     unittest.main()
