@@ -1,6 +1,6 @@
 <template>
     <div class="toolbar">
-        <div class="tooltip" v-if="tooltip">{{ tooltip }}</div>
+        <div class="tooltip secondary secondary-border" v-if="tooltip">{{ tooltip }}</div>
         <div class="toolbar-components">
             <button 
                 @mouseenter="ev => showTooltip(ev, 'Recenter the graph on screen')" 
@@ -23,6 +23,41 @@
         </div>
     </div>
 </template>
+
+<style scoped>
+
+    .toolbar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+
+    .toolbar-components {
+        text-align: left;
+        vertical-align: center;
+        height: 32px;
+    }
+
+    .toolbar-components > * {
+        display: inline-block;
+        max-height: 32px;
+        vertical-align: middle;
+        margin-left: 1em;
+        margin-top: 0.5ex;
+    }
+
+    .transitionSpeed > * {
+        vertical-align: middle;
+        max-width: 4em;
+    }
+
+    .tooltip {
+        padding: 0.5ex 0.5em;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+</style>
 
 <script>
 export default {
@@ -48,32 +83,3 @@ export default {
     }
 }
 </script>
-
-
-<style scoped>
-
-    .toolbar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-    }
-
-    .toolbar-components {
-        text-align: left;
-        vertical-align: center;
-        height: 32px;
-    }
-
-    .toolbar-components > * {
-        display: inline-block;
-        max-height: 32px;
-        vertical-align: middle;
-        margin-right: 1em;
-    }
-
-    .transitionSpeed > * {
-        vertical-align: middle;
-        max-width: 4em;
-    }
-
-</style>

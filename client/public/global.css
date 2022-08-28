@@ -22,3 +22,9 @@
     background-color: #523ac8;
     color: white;
 }
+
+.secondary-border { 
+    border-color: #523ac8;
+    border-width: thin;
+    border-style: solid;
+}
