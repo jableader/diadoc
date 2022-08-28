@@ -55,6 +55,7 @@
         padding: 0.5ex 0.5em;
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
+        background-color: white;
     }
 
 </style>
