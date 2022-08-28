@@ -93,7 +93,8 @@ export default {
             if (this.highlighted < 0)
                 return;
 
-            this.searchTerm = this.suggestions[this.highlighted % this.suggestions.length];
+            this.searchTerm = this.suggestions[this.highlighted % this.suggestions.length] + ' ';
+            this.requestSuggestionRefresh();
         },
         requestSearch(term) {
             if (term)

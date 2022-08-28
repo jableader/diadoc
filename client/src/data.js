@@ -26,12 +26,10 @@ function searchForIds(searchQuery) {
 
 function getFallbackSuggestions(lastWord, preceedingWords) {
     let advancedSearchSamples = [
-        `${lastWord}*`,
-        `*${lastWord}`,
         `caption:${lastWord}`,
         `path:'/${lastWord}'`,
         `${lastWord}*`,
-        `*${lastWord}`
+        `*${lastWord}`,
     ]
 
     if (preceedingWords) {
@@ -56,12 +54,15 @@ function getSuggestions(text) {
 
     return __lexicon()
         .then(function(allwords) {
-            const suggestedWord = lastWord ? lastWord : allwords[allwords.length / 2];
-            if (!preceedingWords && lastWord.length <= 1) {
+            if (!preceedingWords && !lastWord) {
                 return [];
             }
-            
-            const fallback = getFallbackSuggestions(suggestedWord, preceedingWords);
+
+            const fallback = getFallbackSuggestions(lastWord, preceedingWords);
+            if (lastWord.length < 2) {
+                return fallback.map(word => preceedingWords + word);
+            }
+
             return allwords
                 .filter(word => word.indexOf(lastWord) >= 0)
                 .sort((a, b) => a.indexOf(text) - b.indexOf(text))
