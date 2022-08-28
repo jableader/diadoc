@@ -1,6 +1,7 @@
 import argparse
 import pathlib
 import indexer
+import os
 
 from flask import Flask, request, send_from_directory
 app = Flask(__name__)
@@ -32,13 +33,21 @@ def lexicon():
 
     return INDEXER.lexicon()
 
-if __name__ == '__main__':
-    p = argparse.ArgumentParser(description="Serve & Index Documents")
-    p.add_argument('reference_path', type=pathlib.Path, help='Path to reference files')
-    
+p = argparse.ArgumentParser(description="Serve & Index Documents")
+p.add_argument('reference_path', type=pathlib.Path, help='Path to reference files')
+
+try:
     args = p.parse_args()
     REFERENCE_PATH = args.reference_path
-    INDEXER = indexer.Indexer('index', str(REFERENCE_PATH))
-    INDEXER.index_dir('')
+except:
+    REFERENCE_PATH = os.getenv('REFERENCE_PATH', None)
 
+if not REFERENCE_PATH:
+    REFERENCE_PATH='/app/test-reference/lan'
+
+INDEXER = indexer.Indexer('index', str(REFERENCE_PATH))
+INDEXER.index_dir('')
+
+if __name__ == '__main__':
+    p.parse_args() # Second call to show help if error
     app.run()
