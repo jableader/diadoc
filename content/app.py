@@ -37,7 +37,7 @@ if __name__ == '__main__':
     p.add_argument('reference_path', type=pathlib.Path, help='Path to reference files')
     
     args = p.parse_args()
-    REFERENCE_PATH = pathlib.Path('reference') / args.reference_path
+    REFERENCE_PATH = args.reference_path
     INDEXER = indexer.Indexer('index', str(REFERENCE_PATH))
     INDEXER.index_dir('')
 
