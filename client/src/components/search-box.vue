@@ -10,19 +10,16 @@
             @keyup.down="highlighted++"
             @keyup.up="highlighted--"
             @keydown.tab.prevent="tabEvent"
-            @focus="isTyping = true"
-            @blur="isTyping = false"
+            @focus="requestSuggestionRefresh"
+            @blur="ev => setTimeout(() => $emit('blur'), 50)"
             @input="requestSuggestionRefresh" />
 
-        <div
-            class="search-droplist"
-            v-if="isTyping && searchTerm.length >= 3">
+        <div class="search-droplist" v-if="suggestions.length > 0">
             <ul>
                 <li v-for="(item, index) in suggestions" 
                     :key="uniqueSearchKey(item)"
                     :class="{ highlight: index == (highlighted % suggestions.length) }"
-                    @click="requestSearch(item)"
-                    @hover="highlighted=index">
+                    @click="requestSearch(item)">
                     {{ item }}
                 </li>
             </ul>
@@ -68,6 +65,7 @@ input[type=text] {
 <script>
 
 export default {
+    emits: ['blur'],
     props: {
         suggestions: {
             type: Array,
@@ -82,9 +80,6 @@ export default {
         return {
             searchTerm: "",
             highlighted: -1,
-            previousSearchTerm: "",
-            isTyping: false,
-            typingTimeout: 0,
         }
     },
     methods: {
@@ -92,10 +87,6 @@ export default {
             return item.table + (item.column ? '.' + item.column : '');
         },
         requestSuggestionRefresh() {
-            if (this.searchTerm === this.previousSearchTerm)
-                return;
-
-            this.previousSearchTerm = this.searchTerm;
             this.$emit('update-suggestions', this.searchTerm);
         },
         tabEvent() {

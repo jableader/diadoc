@@ -17,7 +17,8 @@
         <div style="width: 60%;max-width: 600px;display: inline-block">
           <search-box :suggestions="searchSuggestions" 
                       @update-suggestions="updateSearchSuggestions"
-                      @search-requested="search" />
+                      @search-requested="search"
+                      @blur="searchSuggestions = []" />
         </div>
     </div>
 
@@ -47,6 +48,14 @@ import ResultsPanel from './components/results-panel.vue';
 import SearchBox from './components/search-box.vue'
 import data from './data';
 
+const searchHelp = [
+  "Some whoosh query samples for advanced searches",
+  "(foo OR bar) AND (baz OR bing)",
+  "foo* b?r",
+  "path:'/foo/bar'",
+  "caption:food AND yum"
+];
+
 export default {
   name: 'App',
   components: {
@@ -70,26 +79,18 @@ export default {
   methods: {
     search(item) {
       data.searchResults(item)
-        .then(r => this.searchResults = r);
+        .then(r => {
+          this.searchResults = r;
+          this.searchSuggestions = [];
+        });
     },
     showReference(id) {
       this.searchResults = null;
       this.selectedReferenceId = id;
     },
     updateSearchSuggestions(text) {
-      if (/[:"'*()]/g.test(text)) {
-        this.searchSuggestions = [
-          "Some whoosh query samples for advanced searches",
-          "(foo OR bar) AND (baz OR bing)",
-          "foo* b?r",
-          "path:'/foo/bar'",
-          "caption:food AND yum"
-        ]
-      }
-      else {
-        data.searchSuggestions(text)
-          .then(r => this.searchSuggestions = r);
-      }
+      data.searchSuggestions(text)
+        .then(r => this.searchSuggestions = r?.length ? r : searchHelp);
     },
   }
 }

@@ -29,6 +29,10 @@ function getSuggestions(text) {
     const lastWord = lastWordIndex > 0 ? text.substring(lastWordIndex).toLowerCase() : text.toLowerCase();
     const preceedingWords = lastWordIndex > 0 ? text.substring(0, lastWordIndex) : '';
 
+    if (lastWord.length <= 1) {
+        return new Promise(r => r([]));
+    }
+
     return __lexicon()
         .then(function(allwords) {
             return allwords
