@@ -6,29 +6,10 @@ except ModuleNotFoundError:
 import argparse
 import pathlib
 import os
-
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-
-app = FastAPI()
+import sys
 
 REFERENCE_PATH = os.getenv('REFERENCE_PATH', '../test-reference/lan')
 INDEX_PATH = os.getenv('INDEX_PATH', '/tmp/diadoc-index')
-
-def get_indexer():
-    return indexer.Indexer(INDEX_PATH, REFERENCE_PATH)
-
-@app.get('/')
-def hello_world():
-    return {"status": "running"}
-
-@app.get('/search')
-def search(query):
-    return get_indexer().search(query)
-
-@app.get('/lexicon')
-def lexicon():
-    return get_indexer().lexicon()
 
 if __name__ == '__main__':
     import argparse
@@ -43,3 +24,37 @@ if __name__ == '__main__':
 
     print("Indexing directory %s" % args.reference_path)
     idx.index_dir('')
+    sys.exit(0)
+
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.mount("/reference", StaticFiles(directory=REFERENCE_PATH), name="reference")
+
+def get_indexer():
+    return indexer.Indexer(INDEX_PATH, REFERENCE_PATH)
+
+@app.get('/')
+async def hello_world():
+    return {"status": "running"}
+
+@app.get('/search')
+async def search(query):
+    return get_indexer().search(query)
+
+@app.get('/lexicon')
+async def lexicon():
+    return get_indexer().lexicon()
+
+
+    
