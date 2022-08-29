@@ -7,7 +7,7 @@
                     @mouseenter="tooltip='Recenter the graph on screen'" 
                     @mouseleave="tooltip=''"
                     @click="$emit('recenter')">
-                        Recenter
+                        Rescale
                 </button>
                 <span class="transitionSpeed"
                     @mouseenter="tooltip='Adjust speed of transitions'" 
