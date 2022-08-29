@@ -1,6 +1,6 @@
 import graph from './graph'
 
-const content = process.env.CONFIG_URL ?? "http://localhost:5000";
+const contentBaseUrl = process.env.CONFIG_URL ?? "http://localhost:5000";
 
 const lazyFetch = function(url) {
     let result = null;
@@ -8,7 +8,7 @@ const lazyFetch = function(url) {
         if (result !== null)
             return new Promise((r) => r(result))
 
-        return fetch(new URL(url, content))
+        return fetch(new URL(url, contentBaseUrl))
             .then(r => r.json())
             .then(function(m) {
                 result = m;
@@ -17,11 +17,11 @@ const lazyFetch = function(url) {
     }
 };
 
-var __referenceMetaData = lazyFetch('/reference/meta.json');
-var __lexicon = lazyFetch('/lexicon');
+var __referenceMetaData = lazyFetch('/ref/meta.json');
+var __lexicon = lazyFetch('/api/lexicon');
 
 function searchForIds(searchQuery) {
-    return fetch(new URL('/search?query=' + encodeURIComponent(searchQuery), content))
+    return fetch(new URL('/api/search?query=' + encodeURIComponent(searchQuery), contentBaseUrl))
         .then(q => q.json())
         .then(results => results.map((r) => ({ id: graph.idForPath(r.path), snippet: r.caption })))
 }
@@ -92,7 +92,7 @@ export default {
             return new Promise((g, b) => b("Null id"));
         }
 
-        return fetch(new URL(`/reference/${id.path}/self.md`, content))
+        return fetch(new URL(`/ref/${id.path}/self.md`, contentBaseUrl))
                 .then(r => r.text());
     },
 }

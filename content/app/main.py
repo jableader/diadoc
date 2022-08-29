@@ -39,20 +39,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/reference", StaticFiles(directory=REFERENCE_PATH), name="reference")
+app.mount("/ref", StaticFiles(directory=REFERENCE_PATH), name="reference")
 
 def get_indexer():
     return indexer.Indexer(INDEX_PATH, REFERENCE_PATH)
 
-@app.get('/')
+@app.get('/api/status')
 async def hello_world():
     return {"status": "running"}
 
-@app.get('/search')
+@app.get('/api/search')
 async def search(query):
     return get_indexer().search(query)
 
-@app.get('/lexicon')
+@app.get('/api/lexicon')
 async def lexicon():
     return get_indexer().lexicon()
 
