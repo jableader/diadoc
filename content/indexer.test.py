@@ -5,7 +5,7 @@ import shutil
 
 from os import path
 
-from indexer import *
+from app.indexer import *
 
 def all_substrings_in(s, subs):
     for sub in subs:

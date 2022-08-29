@@ -1,9 +1,13 @@
 FROM python:3.10
-WORKDIR /app
+WORKDIR /code
 
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+COPY requirements.txt /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY . .
+COPY app /code/app
+COPY test-reference/lan /reference
 
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0" ]
+ENV REFERENCE_PATH=/reference
+ENV INDEX_PATH=/index
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]
