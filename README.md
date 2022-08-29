@@ -35,3 +35,24 @@ Suggestions provided based on the contents of the documentation:
 And advanced search using [whoosh query syntax](https://whoosh.readthedocs.io/en/latest/querylang.html):
 
 ![Screenshot of search](readme/search.png)
+
+## Running diadocs
+
+Running is easy with docker-compose.
+
+Simply clone the repo locally
+```
+git clone https://github.com/jableader/datadic
+```
+
+Change into the dir
+```
+cd datadic
+```
+
+Run docker-compose:
+```
+docker-compose up -d
+```
+
+It'll automatically build and run the containers for you. Open http://localhost:8080/ to see.
