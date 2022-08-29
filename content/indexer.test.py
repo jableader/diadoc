@@ -19,7 +19,7 @@ class TestIndexer(unittest.TestCase):
 
     def setUp(self):
         self.index_dir = tempfile.mkdtemp()
-        self.idx = Indexer(self.index_dir, './test-reference/lan', create_index=True)
+        self.idx = Indexer(self.index_dir, './test-reference/lan', create=True)
 
     def tearDown(self):
         if os.path.exists(self.index_dir):
@@ -27,7 +27,7 @@ class TestIndexer(unittest.TestCase):
 
     def test_create_index_if_not_exists(self):
         shutil.rmtree(self.index_dir)
-        self.idx = Indexer(self.index_dir, './test-reference/lan', create_index=True)
+        self.idx = Indexer(self.index_dir, './test-reference/lan', create=True)
         self.test_search_no_docs()
 
     def test_read_existing_index(self):

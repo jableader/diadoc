@@ -42,8 +42,8 @@ def _sort_key(path):
     return u'%03d%s' % (path.count(b'/'), path)
 
 class Indexer:
-    def __init__(self, index_dir, reference_dir, create_index=False):
-        self.idx = _get_or_create_index(index_dir, create_index)
+    def __init__(self, index_dir, reference_dir, create=False):
+        self.idx = _get_or_create_index(index_dir, create)
         self.reference_dir = reference_dir
         
         with open(meta_file(reference_dir), 'r') as f:
