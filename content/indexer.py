@@ -1,5 +1,5 @@
-from os import listdir, walk
-from os.path import join, dirname
+from os import listdir, walk, mkdir
+from os.path import join, dirname, isdir
 
 import json
 
@@ -28,16 +28,22 @@ def read_file(path):
 def meta_file(reference_dir):
     return join(reference_dir, 'meta.json')
 
-def _get_or_create_index(dir):
-    return index.create_in(dir, SCHEMA)
+def _get_or_create_index(dir, create):
+    if create:
+        if not isdir(dir):
+            mkdir(dir)
+    
+        return index.create_in(dir, SCHEMA)
+
+    return index.open_dir(dir)
 
 def _sort_key(path):
     # First 3 chars are the depth, then alphabetical
     return u'%03d%s' % (path.count(b'/'), path)
 
 class Indexer:
-    def __init__(self, index_dir, reference_dir):
-        self.idx = _get_or_create_index(index_dir)
+    def __init__(self, index_dir, reference_dir, create_index=False):
+        self.idx = _get_or_create_index(index_dir, create_index)
         self.reference_dir = reference_dir
         
         with open(meta_file(reference_dir), 'r') as f:
