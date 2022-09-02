@@ -143,8 +143,14 @@ export default {
 .reference-panel {
   padding: 1ex 1em 5px 5px;
   overflow-y: scroll;
+  height: 100%;
+  display: flex;
   text-align: left;
   background-color: white;
+}
+
+.reference-panel > div {
+  width: 100%;
 }
 
 .bottom-level {
