@@ -56,3 +56,9 @@ docker-compose up -d
 ```
 
 It'll automatically build and run the containers for you. Open http://localhost:8080/ to see.
+
+## Todo
+
+[ ] Images / Iconography for nodes
+[ ] Tags
+[ ] Node visibility

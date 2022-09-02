@@ -1,47 +1,49 @@
 <template>
   <div class="top-level">
-    <div class="graph-container" :style="{ 'right': selectedReferenceId ? '50%' : '0' }">
-      <dbgraph 
-        ref="graph"
-        :reference="reference"
-        :selected-reference="selectedReferenceId"
-        @reference-requested="showReference"
-        />
-    </div>
-
     <div class="search-container primary">
-        <div class="search-prompt">
-          Diadocs &nbsp;&nbsp;&nbsp;
-        </div>
+      <div class="search-prompt">
+        Diadocs &nbsp;&nbsp;&nbsp;
+      </div>
 
-        <div style="width: 60%;max-width: 600px;display: inline-block">
-          <search-box :suggestions="searchSuggestions" 
-                      @update-suggestions="updateSearchSuggestions"
-                      @search-requested="search"
-                      @blur="searchSuggestions = []" />
-        </div>
+      <div style="width: 60%;max-width: 600px;display: inline-block">
+        <search-box :suggestions="searchSuggestions" @update-suggestions="updateSearchSuggestions"
+          @search-requested="search" @blur="searchSuggestions = []" />
+      </div>
     </div>
 
-    <div class="search-results primary" v-if="searchResults">
-      <span>Search Results</span>
-      <button @click="searchResults=null">X</button>
-      <results-panel 
-          :searchResults="searchResults"
-          :selectedId="selectedReferenceId" 
-          @item-selected="showReference"/>
-    </div>
+    <div class="bottom-level">
+      <splitpanes>
+        <pane v-if="searchResults" max-size="50">
+          <div class="search-results primary">
+            <div style = "display: flex; justify-content:flex-end">
+              <button @click="searchResults = null">X</button>
+            </div>
+            <span>Search Results</span>
+            <results-panel :searchResults="searchResults" :selectedId="selectedReferenceId"
+              @item-selected="showReference" />
+          </div>
+        </pane>
 
-    <div class="reference-panel" v-if="selectedReferenceId">
-      <reference-panel
-        :source-id="selectedReferenceId"
-        :referenceMetaData="reference"
-        @close="selectedReferenceId=null" 
-        @reference-requested="showReference"/>
+        <pane min-size="25">
+          <dbgraph ref="graph" :reference="reference" :selected-reference="selectedReferenceId"
+            @reference-requested="showReference" />
+        </pane>
+
+        <pane v-if="selectedReferenceId" min-size="25">
+          <div class="reference-panel">
+            <reference-panel :source-id="selectedReferenceId" :referenceMetaData="reference"
+              @close="selectedReferenceId = null" @reference-requested="showReference" />
+          </div>
+        </pane>
+      </splitpanes>
     </div>
   </div>
 </template>
 
 <script>
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
+
 import ReferencePanel from './components/reference-panel.vue'
 import Dbgraph from './components/dbgraph.vue';
 import ResultsPanel from './components/results-panel.vue';
@@ -54,7 +56,8 @@ export default {
     Dbgraph,
     SearchBox,
     ResultsPanel,
-    ReferencePanel
+    ReferencePanel,
+    Splitpanes, Pane
   },
   data (){
     return {
@@ -77,7 +80,6 @@ export default {
         });
     },
     showReference(id) {
-      this.searchResults = null;
       this.selectedReferenceId = id;
     },
     updateSearchSuggestions(text) {
@@ -109,16 +111,6 @@ export default {
   left: 0;
 }
 
-.graph-container {
-  position: absolute;
-  top: 8ex;
-  bottom: 0;
-  left: 0;
-  right: 0;
-
-  z-index: 10;
-}
-
 .search-container {
   position: absolute;
   width: 100%;
@@ -141,41 +133,33 @@ export default {
 }
 
 .search-results {
-  position: absolute;
   overflow-y: scroll;
-  overflow-x: hidden;
-  top: 8ex;
-  width: 30ex;
-  max-height: 90%;
-  z-index: 20;
+  height: 100%;
   padding: 1ex 5px 2px 5px;
 
   text-align: left;
 }
 
-.search-results > button {
-  position: absolute;
-  right: 5px;
+.reference-panel {
+  padding: 1ex 1em 5px 5px;
+  overflow-y: scroll;
+  text-align: left;
+  background-color: white;
 }
 
-.reference-panel {
+.bottom-level {
   position: absolute;
-  z-index: 20;
-
-  right: 0px;
   top: 8ex;
   bottom: 0;
-  width: 50%;
+  left: 0;
+  right: 0;
+}
 
-  padding: 1ex 1em 5px 5px;
-
-  overflow-y: scroll;
-
-  text-align: left;
-
-  border-bottom-left-radius: 20px;
-  border-left: solid medium #625ad8;
-  background-color: white;
+.splitpanes__splitter {
+  background-color: #625ad8;
+  border-left: solid medium #8882df;
+  border-right: solid medium #8882df;
+  width: 4pt
 }
 
 </style>

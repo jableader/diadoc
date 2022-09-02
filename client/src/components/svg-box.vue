@@ -14,6 +14,7 @@
       :y="shape.label.baseline"
       :transform="`scale(${shape.label.scale}, ${shape.label.scale})`"
       fill="black"
+      @dblclick="$emit('shape-selected', shape.id)"
       >{{shape.label.text}}</text>
 
     <g v-if="shape.children.length > 0" :transform="`translate(${shape.children.box.x}, ${shape.children.box.y})`">
