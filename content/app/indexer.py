@@ -2,8 +2,8 @@ from os import listdir, walk, mkdir
 from os.path import join, basename, isdir
 
 import json
+import re
 
-import whoosh
 from whoosh import index
 from whoosh.qparser import QueryParser
 from whoosh.analysis import RegexTokenizer, LowercaseFilter
@@ -22,7 +22,7 @@ SCHEMA = Schema(
         )
 
 def read_file(path):
-    with open(path, 'r', errors='ignore') as f:
+    with open(path, 'r', errors='ignore', encoding='utf8') as f:
         return f.read()
 
 def meta_file(reference_dir):
@@ -40,6 +40,27 @@ def _get_or_create_index(dir, create):
 def _sort_key(path):
     # First 3 chars are the depth, then alphabetical
     return u'%03d%s' % (path.count(b'/'), path)
+
+def simplify(query):
+  if hasattr(query, 'fieldname') and hasattr(query, 'text'):
+    return [query]
+  
+  try:
+    results = []
+    for item in query:
+      if hasattr(item, 'fieldname') and hasattr(item, 'text'):
+        results.append(item)
+    return results
+
+  except NotImplementedError:
+    pass
+
+def get_text_around(regex, haystack, n=50):
+  match = re.search(r'\b' + regex + r'\b', haystack, flags=re.IGNORECASE)
+  if match:
+    mid = (match.start(0) + match.end(0)) // 2
+    return haystack[max(0, mid - n):min(mid + n, len(haystack))]
+
 
 class Indexer:
     def __init__(self, index_dir, reference_dir, create=False):
@@ -89,15 +110,39 @@ class Indexer:
         writer.add_document(caption=caption, content=content, path=path)
         writer.commit()
 
+    def get_context(self, path, item, query):
+      content = None
+      for part in simplify(query):
+        if part.fieldname == 'content':
+          if not content:
+            content = self._read_reference_document(path)
+
+          r = get_text_around(part.text, content)
+          if r:
+            return r
+            
+        elif part.fieldname in item:
+          r = get_text_around(part.text, item[part.fieldname])
+          if r:
+            return r
+      return None
+
     def search(self, text):
         with self.idx.searcher() as searcher:
             q = QueryParser("content", schema=SCHEMA)
             query = q.parse(text)
 
             sort = TranslateFacet(_sort_key, FieldFacet('path'))
-            results = searcher.search(query, sortedby=sort)
+            results = []
+            for item in searcher.search(query, sortedby=sort):
+              context = self.get_context(item['path'], item, query)
+              results.append({
+                'path': item['path'],
+                'caption': item['caption'],
+                'snippet': context
+              })
 
-            return [dict(r) for r in results]
+            return results
 
     def lexicon(self):
         with self.idx.searcher() as searcher:

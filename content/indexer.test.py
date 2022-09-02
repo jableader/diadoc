@@ -42,9 +42,10 @@ class TestIndexer(unittest.TestCase):
     def test_indexed_search_caption(self):
         self.idx.index('/internet')
         
-        results = self.idx.search('WAN')
+        results = self.idx.search('caption:WAN')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
+        self.assertIn('WAN', results[0]['snippet'])
 
     def test_indexed_search_content(self):
         self.idx.index('/internet')
@@ -52,6 +53,7 @@ class TestIndexer(unittest.TestCase):
         results = self.idx.search('aversum')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
+        self.assertIn('aversum', results[0]['snippet'])
 
     def test_indexed_search_noresult(self):
         self.idx.index('/internet')
