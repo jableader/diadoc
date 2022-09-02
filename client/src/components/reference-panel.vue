@@ -1,5 +1,5 @@
 <template>
-    <div>      
+    <div>
       <div class="reference-header">
         <button @click="$emit('close')">X</button>
         &nbsp;&nbsp;
