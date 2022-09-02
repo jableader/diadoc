@@ -23,7 +23,7 @@ var __lexicon = lazyFetch('/api/lexicon');
 function searchForIds(searchQuery) {
     return fetch(new URL('/api/search?query=' + encodeURIComponent(searchQuery), contentBaseUrl))
         .then(q => q.json())
-        .then(results => results.map((r) => ({ id: graph.idForPath(r.path), snippet: r.caption })))
+        .then(results => results.map((r) => ({ id: graph.idForPath(r.path), caption: r.caption, snippet: r.snippet })))
 }
 
 function getFallbackSuggestions(lastWord, preceedingWords) {

@@ -5,6 +5,7 @@
         </div>
         <ul class="primary" v-if="searchResults">
             <li v-for="item in searchResults" 
+                class="secondary"
                 :key="item"
                 @click="$emit('item-selected', item.id)">
 
@@ -41,7 +42,8 @@ ul {
 
 li {
     list-style-type: none;
-    border: 1px solid gray;
+    margin: 1ex;
+    border-radius: 3pt;
 }
 
 </style>
