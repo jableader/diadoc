@@ -26,8 +26,8 @@
       </g>
     </svg>
     <nav-toolbar 
-      @recenter="recenter(true)"
       :transition-speed="transitionSpeed"
+      @recenter="recenter(true)"
       @update-transition-speed="v => transitionSpeed = v"
       />
   </div>
