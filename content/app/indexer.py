@@ -1,5 +1,5 @@
 from os import listdir, walk, mkdir
-from os.path import join, dirname, isdir
+from os.path import join, basename, isdir
 
 import json
 
@@ -82,7 +82,7 @@ class Indexer:
             raise Exception(f"Expected reference path, not filepath: {path}")
 
         m = self.meta_for_file(path)
-        caption = m['caption'] if m and 'caption' in m else None
+        caption = m['caption'] if m and 'caption' in m else basename(path)
         content = self._read_reference_document(path)
 
         writer = self.idx.writer()

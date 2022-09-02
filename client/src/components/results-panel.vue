@@ -37,7 +37,6 @@ ul {
     margin-right: auto;
     
     padding: 1px;
-    max-width: 500px;
 }
 
 li {
