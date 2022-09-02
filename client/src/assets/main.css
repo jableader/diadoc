@@ -42,9 +42,14 @@
     box-shadow: none;
 }
 
-.primary li :hover {
+.primary li:hover, .secondary li:hover {
     background-color: #523ac8;
     color: white;
+}
+
+.secondary {
+  background-color: #b2aee4;
+  color: black;
 }
 
 .secondary-border { 
