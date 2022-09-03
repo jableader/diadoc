@@ -1,4 +1,4 @@
-# 🖧 LAN #1
+# 🖧 LAN #1 - other
 # Etiam tenebat fronde mollibus matre nocturnos quae
 
 ## A feres nesciet

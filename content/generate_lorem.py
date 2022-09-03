@@ -34,14 +34,18 @@ def create_subtree(root, o, fetch_md, fetch_neighbours):
         os.mkdir(p)
 
         seed = seed_from_path(p)
-        files = [path.join(p, f) for f in ['index.md', *fetch_neighbours(seed)]]
-        
+        files = fetch_neighbours(seed)
+        files.append('index.md')
+
+        caption = get_caption(v, k)
+
         for f in files:
-          with open(f, 'w') as md:
+          fpath = path.join(p, f)
+          with open(fpath, 'w') as md:
               print("Generating %s" % p)
-              
-              fseed = seed_from_path(f)
-              md.write('# ' + get_caption(v, k) + '\n' + fetch_md(fseed))
+              file_caption = caption if f == 'index.md' else f'{caption} - {f.rsplit(".", maxsplit=1)[0]}'
+              fseed = seed_from_path(fpath)
+              md.write(f'# {file_caption}\n' + fetch_md(fseed))
 
         create_subtree(p, v, fetch_md, fetch_neighbours)
 
