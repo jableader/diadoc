@@ -50,10 +50,10 @@ class TestIndexer(unittest.TestCase):
     def test_indexed_search_content(self):
         self.idx.index('/internet')
 
-        results = self.idx.search('aversum')
+        results = self.idx.search('lorem')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
-        self.assertIn('aversum', results[0]['snippet'])
+        self.assertIn('lorem', results[0]['snippet'].lower())
 
     def test_indexed_search_noresult(self):
         self.idx.index('/internet')
@@ -64,7 +64,7 @@ class TestIndexer(unittest.TestCase):
     def test_indexed_search_multitoken_adjacent(self):
         self.idx.index('/internet')
 
-        results = self.idx.search('suspirat aversum')
+        results = self.idx.search('lorem markdownum')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
         self.assertEqual('/internet', results[0]['path'])
@@ -72,7 +72,7 @@ class TestIndexer(unittest.TestCase):
     def test_indexed_search_multitoken_notadjacent(self):
         self.idx.index('/internet')
 
-        results = self.idx.search('convicia aversum')
+        results = self.idx.search('lorem wan')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
         self.assertEqual('/internet', results[0]['path'])
@@ -80,15 +80,20 @@ class TestIndexer(unittest.TestCase):
     def test_indexed_dir(self):
         self.idx.index_dir('internet')
 
-        results = self.idx.search('convicia')
+        results = self.idx.search('troubleshootingFileOem')
         self.assertEqual(len(results), 1)
         self.assertEqual('🌐 WAN', results[0]['caption'])
         self.assertEqual('/internet', results[0]['path'])
 
     def test_indexed_dir_nested(self):
         self.idx.index_dir('/')
-        results = self.idx.search('convicia')
-        self.assertEqual(len(results), 3)
+        total_files = 0
+        for r, d, f in os.walk(self.index_dir):
+          total_files += len(f)
+        
+        self.assertGreater(total_files, 0, msg='PRE: Should be some files to index')
+        results = self.idx.search('lorem')
+        self.assertGreaterEqual(len(results), total_files)
 
     def test_lexicon_items_includes_content(self):
         self.idx.index_dir('/')

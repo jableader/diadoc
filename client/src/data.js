@@ -74,6 +74,16 @@ function getSuggestions(text) {
         });
 }
 
+function urlOf(id) {
+  const fileSpecified = id.path.match(/\.\w+$/g);
+  if (fileSpecified) {
+    return `/ref/${id.path}`
+  }
+
+  const fixed = id.path.replace(/^\/+|\/+$/gm, '');
+  return `/ref/${fixed}/index.md`
+}
+
 export default {
     searchSuggestions(text) {
         return getSuggestions(text)
@@ -92,7 +102,6 @@ export default {
             return new Promise((g, b) => b("Null id"));
         }
 
-        return fetch(new URL(`/ref/${id.path}/self.md`, contentBaseUrl))
-                .then(r => r.text());
+        return fetch(new URL(urlOf(id), contentBaseUrl)).then(r => r.text());
     },
 }

@@ -89,13 +89,13 @@ class Indexer:
         return filepath[len(self.reference_dir):]
 
     def _read_reference_document(self, path):
-        return read_file(join(self._ref_to_filepath(path), 'self.md'))
+        return read_file(join(self._ref_to_filepath(path), 'index.md'))
 
     def index_dir(self, path):
         for fileroot, dirs, files in walk(self._ref_to_filepath(path)):
             refroot = self._filepath_to_ref(fileroot)
             
-            if 'self.md' in files:
+            if 'index.md' in files:
                 self.index(refroot)
 
     def index(self, path):
