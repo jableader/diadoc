@@ -135,5 +135,14 @@ class TestIndexer(unittest.TestCase):
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]['path'], '/internet')
 
+    def test_search_related_files(self):
+      self.idx.index_dir('')
+      results = self.idx.search('path:refd.md lorem')
+      self.assertGreater(len(results), 0)
+
+      path = results[0]['path']
+      self.assertTrue(path.endswith('.md'), msg=f'Expected end with ".md": "{path}"')
+
+
 if __name__ == '__main__':
     unittest.main()
