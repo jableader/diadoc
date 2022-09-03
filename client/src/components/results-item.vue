@@ -26,6 +26,7 @@ export default {
         padding-top: 1ex;
         padding-bottom: 0.5ex;
         border-radius: 5px;
+        overflow-wrap: break-word;
     }
 
     h1, h2 {
