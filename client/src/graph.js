@@ -72,6 +72,10 @@ export default {
         }
 
         var node = this.getNode(root, id);
+        if (!node) {
+          return results;
+        }
+
         for (const child in node) {
             if (child != '__meta')
                 results.push(this.idForPath(id.path + '/' + child));

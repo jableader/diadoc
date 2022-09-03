@@ -77,15 +77,17 @@ function findChild(shapes, id) {
             return s;
     }
 
-    throw `${Graph.friendlyId(id)} not found.`;
+    return null;
 }
 
 function getRootShapes(shapes, id) {
     const parents = [];
     for (const subId of Graph.roots(id)) {
         const child = findChild(shapes, subId);
-        parents.push(child);
+        if (!child)
+          return parents;
 
+        parents.push(child);
         shapes = child.children;
     }
 
