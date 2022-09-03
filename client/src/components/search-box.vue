@@ -11,7 +11,6 @@
             @keyup.up="highlighted--"
             @keydown.tab.prevent="tabEvent"
             @focus="requestSuggestionRefresh"
-            @blur="ev => setTimeout(() => $emit('blur'), 50)"
             @input="requestSuggestionRefresh" />
 
         <div class="search-droplist" v-if="suggestions.length > 0">
