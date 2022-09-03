@@ -25,22 +25,25 @@ def seed_from_path(p):
     n = n * 7 + int(c)
   return n
 
-def create_subtree(root, o, fetch_md):
+def create_subtree(root, o, fetch_md, fetch_neighbours):
     for k, v in o.items():
         if k == META_KEY:
             continue
 
         p = path.join(root, k)
-        f = path.join(p, 'index.md')
         os.mkdir(p)
 
-        with open(f, 'w') as md:
-            print("Generating %s" % p)
-            seed = seed_from_path(f)
-            
-            md.write('# ' + get_caption(v, k) + '\n' + fetch_md(seed))
+        seed = seed_from_path(p)
+        files = [path.join(p, f) for f in ['index.md', *fetch_neighbours(seed)]]
+        
+        for f in files:
+          with open(f, 'w') as md:
+              print("Generating %s" % p)
+              
+              fseed = seed_from_path(f)
+              md.write('# ' + get_caption(v, k) + '\n' + fetch_md(fseed))
 
-        create_subtree(p, v, fetch_md)
+        create_subtree(p, v, fetch_md, fetch_neighbours)
 
 def create_lorem_array(n):
   lorem = []
@@ -48,6 +51,13 @@ def create_lorem_array(n):
     print(f'\r {i} / {n}', end='')
     lorem.append(generate_lorem())
   return lorem
+
+def fetch_neighbours(seed, names, min, max):
+  num = seed % (max - min)
+  if num == 0:
+    return []
+  
+  return [names[(i * seed) % len(names)] for i in range(1, num+1)]
 
 def genmd(args):
     lorem = load_json(args.lorem)
@@ -57,6 +67,7 @@ def genmd(args):
     if lorem:
       fetch_md = lambda seed: lorem[seed % len(lorem)]
 
+    neighbours=lambda seed: fetch_neighbours(seed, args.neighbour_list, args.min_neighbours, args.max_neighbours)
     root = args.out
     if not path.isdir(root):
         os.mkdir(root)
@@ -65,7 +76,7 @@ def genmd(args):
         json.dump(meta, outMeta, indent=2)
     
     if not args.metaonly:
-        create_subtree(root, meta, fetch_md)
+        create_subtree(root, meta, fetch_md, neighbours)
 
 def genlorem(args):
   print("Generating lorem")
@@ -93,6 +104,9 @@ if __name__ == '__main__':
     parser_genmd.add_argument('out', help='Output directory (meta will be copied)')
     parser_genmd.add_argument('--lorem', default=None, help='Lorem file to use')
     parser_genmd.add_argument('--metaonly', action='store_true', help='Only regenerate meta')
+    parser_genmd.add_argument('--neighbour_list', nargs='+', default=['other.md', 'refd.md', 'something_else.md'], help='Selection of path names for neighbour files')
+    parser_genmd.add_argument('--min_neighbours', default=0, type=int, help='Min neighbour files for directory')
+    parser_genmd.add_argument('--max_neighbours', default=2, type=int, help='Max number of neighbours')
     parser_genmd.set_defaults(main=genmd)
 
     args = parser.parse_args()
