@@ -12,8 +12,8 @@
     </div>
 
     <div class="bottom-level">
-      <splitpanes>
-        <pane v-if="searchResults" max-size="50">
+      <splitpanes @resize="panelResized">
+        <pane v-if="searchResults" max-size="50" :size="szResults" ref="paneResults">
           <div class="search-results primary">
             <div style = "display: flex; justify-content:flex-end">
               <button @click="searchResults = null">X</button>
@@ -24,12 +24,12 @@
           </div>
         </pane>
 
-        <pane min-size="25">
+        <pane min-size="25" :size="szGraph" ref="paneGraph">
           <dbgraph ref="graph" :reference="reference" :selected-reference="selectedReferenceId"
             @reference-requested="showReference" />
         </pane>
 
-        <pane v-if="selectedReferenceId" min-size="25">
+        <pane v-if="selectedReferenceId" :size="szRef" ref="paneRef">
           <div class="reference-panel">
             <reference-panel :source-id="selectedReferenceId" :referenceMetaData="reference"
               @close="selectedReferenceId = null" @reference-requested="showReference" />
@@ -65,6 +65,9 @@ export default {
       searchResults: null,
       reference: null,
       selectedReferenceId: null,
+      szResults: 25,
+      szRef: 50,
+      szGraph: 100,
     }
   },
   created() {
@@ -81,6 +84,20 @@ export default {
     },
     showReference(id) {
       this.selectedReferenceId = id;
+    },
+    panelResized(ev) {
+      const panes = ['Results', 'Graph', 'Ref'];
+      const visible = panes.filter(p => this.$refs[`pane${p}`]);
+      
+      let graphSize = 100;
+      for (let i = 0; i < visible.length; i++) {
+        if (visible[i] != 'Graph') {
+          this['sz'+visible[i]] = ev[i].size;
+          graphSize -= ev[i].size;
+        }
+      }
+
+      this.szGraph = graphSize;
     },
     updateSearchSuggestions(text) {
       data.searchSuggestions(text)
