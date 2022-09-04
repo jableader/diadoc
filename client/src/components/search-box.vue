@@ -10,6 +10,7 @@
             @keyup.down="highlighted++"
             @keyup.up="highlighted--"
             @keydown.tab.prevent="tabEvent"
+            @blur="delayedBlur"
             @focus="requestSuggestionRefresh"
             @input="requestSuggestionRefresh" />
 
@@ -17,7 +18,7 @@
             <ul>
                 <li v-for="(item, index) in suggestions" 
                     :key="uniqueSearchKey(item)"
-                    :class="{ highlight: index == (highlighted % suggestions.length) }"
+                    :class="{ secondary: index == (highlighted % suggestions.length) }"
                     @click="requestSearch(item)">
                     {{ item }}
                 </li>
@@ -82,6 +83,9 @@ export default {
         }
     },
     methods: {
+        delayedBlur() {
+          setTimeout((() => this.$emit('blur')).bind(this), 100)
+        },
         uniqueSearchKey(item) {
             return item.table + (item.column ? '.' + item.column : '');
         },
