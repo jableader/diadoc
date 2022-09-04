@@ -35,7 +35,7 @@
         <pane v-if="selectedReferenceId" :size="layout.ref.size" ref="ref">
           <div class="reference-panel">
             <reference-panel :source-id="selectedReferenceId" :referenceMetaData="reference"
-              @close="selectedReferenceId = null" @reference-requested="showReference" />
+              @reference-requested="showReference" />
           </div>
         </pane>
       </splitpanes>
@@ -46,7 +46,7 @@
 <script>
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-
+import Graph from '../graph.js'
 import ReferencePanel from '../components/reference-panel.vue'
 import Dbgraph from '../components/dbgraph.vue';
 import ResultsPanel from '../components/results-panel.vue';
@@ -76,9 +76,16 @@ export default {
       searchSuggestions: [],
       searchResults: null,
       reference: null,
-      selectedReferenceId: null,
       layout,
     }
+  },
+  computed: {
+    selectedReferenceId(){
+      var parts = this.$route.params.path;
+      if (parts && parts.length > 0)
+        return Graph.idForPath('/' + parts.join('/'));
+      return null;
+    } 
   },
   created() {
     data.fetchReferenceMetadata()
@@ -93,7 +100,7 @@ export default {
         });
     },
     showReference(id) {
-      this.selectedReferenceId = id;
+      this.$router.push('/v' + Graph.pathForId(id));
     },
     panelResized(ev, parent) {
       let layout = this.layout, prefix = '';
