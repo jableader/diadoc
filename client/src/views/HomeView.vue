@@ -12,9 +12,9 @@
     </div>
 
     <div class="bottom-level">
-      <splitpanes @resize="ev => panelResized(ev, '')" v-if="reference">
+      <splitpanes @resize="ev => panelResized(ev, '', true)" v-if="reference">
         <pane min-size="25" :size="layout.container.size" ref="container">
-          <splitpanes :horizontal="layout.container.size < 50" @resize="ev => panelResized(ev, 'container')">
+          <splitpanes :horizontal="hstack" @resize="ev => panelResized(ev, 'container')" @resized="updateHstack">
             <pane v-if="searchResults" :size="layout.container.results.size" ref="container.results">
               <div class="search-results primary">
                 <div style = "display: flex; justify-content:flex-end">
@@ -82,6 +82,7 @@ export default {
       searchSuggestions: [],
       searchResults: null,
       reference: null,
+      hstack: false,
       layout,
     }
   },
@@ -137,7 +138,19 @@ export default {
         this.$router.push({ path: '/', query });
       }
     },
-    panelResized(ev, parent) {
+    updateHstack() {
+      if (this.layout.container.size < 50) {
+        this.hstack = true;
+        return;
+      }
+      else if (this.layout.container.graph.size < 50) {
+        this.hstack = true;
+        return;
+      }
+
+      this.hstack = (this.layout.container.size / 100.0) * (this.layout.container.size / 100.0) < 0.25
+    },
+    panelResized(ev, parent, updateHstack) {
       let layout = this.layout, prefix = '';
       if (parent) {
         layout = parent.split('.').reduce((l, n) => l[n], layout);
@@ -149,6 +162,10 @@ export default {
         .filter(k => this.$refs[prefix + k]);
 
       visible.forEach((key, i) => layout[key].size = ev[i].size);
+
+      if (updateHstack) {
+        this.updateHstack();
+      }
     },
     updateSearchSuggestions(text) {
       data.searchSuggestions(text)
