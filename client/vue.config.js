@@ -1,7 +1,4 @@
-const content = process.env.CONFIG_URL ?? "http://localhost:5000";
-
-module.exports = {
-    configureWebpack: {
-        devtool: 'source-map'
-    },
-}
+const { defineConfig } = require('@vue/cli-service')
+module.exports = defineConfig({
+  transpileDependencies: true
+})

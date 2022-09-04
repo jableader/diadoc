@@ -32,7 +32,7 @@ function buildShapes(reference) {
 }
 
 export default {
-  name: 'Graph',
+  name: 'DbGraph',
   components: {
     'svg-layout': SvgLayout
   },
