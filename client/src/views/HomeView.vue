@@ -18,7 +18,7 @@
             <pane v-if="searchResults" :size="layout.container.results.size" ref="container.results">
               <div class="search-results primary">
                 <div style = "display: flex; justify-content:flex-end">
-                  <button @click="searchResults = null">X</button>
+                  <button @click="showPage(selectedReferenceId, null)">X</button>
                 </div>
                 <span>Search Results</span>
                 <results-panel :searchResults="searchResults" :selectedId="selectedReferenceId"
@@ -34,7 +34,7 @@
         </pane>
         <pane v-if="selectedReferenceId" :size="layout.ref.size" ref="ref">
           <div class="reference-panel">
-            <reference-panel :source-id="selectedReferenceId" :referenceMetaData="reference"
+            <reference-panel :source-id="selectedReferenceId" :referenceMetaData="reference" @close="showReference(null)"
               @reference-requested="showReference" />
           </div>
         </pane>
@@ -62,6 +62,12 @@ export default {
     ReferencePanel,
     Splitpanes, Pane,
   },
+  props: {
+    query: {
+      type: String,
+      required: false
+    }
+  },
   data (){
     const layout = {
       container: {
@@ -85,7 +91,17 @@ export default {
       if (parts && parts.length > 0)
         return Graph.idForPath('/' + parts.join('/'));
       return null;
-    } 
+    },
+  },
+  watch: {
+    query(prompt) {
+      if (prompt) {
+        return data.searchResults(prompt).then(g => {
+          this.searchResults = g;
+          this.searchSuggestions = [];
+        });
+      }
+    }
   },
   created() {
     data.fetchReferenceMetadata()
@@ -93,14 +109,22 @@ export default {
   },
   methods: {
     search(item) {
-      data.searchResults(item)
-        .then(r => {
-          this.searchResults = r;
-          this.searchSuggestions = [];
-        });
+      this.showPage(this.selectedReferenceId, item);
     },
     showReference(id) {
-      this.$router.push('/v' + Graph.pathForId(id));
+      this.showPage(id, this.query);
+    },
+    showPage(id, searchtext) {
+      const query = searchtext ? { query: searchtext } : null
+      if (id) {
+        this.$router.push({
+          path: '/v' + Graph.pathForId(id),
+          query
+        });
+      }
+      else {
+        this.$router.push({ path: '/', query });
+      }
     },
     panelResized(ev, parent) {
       let layout = this.layout, prefix = '';
