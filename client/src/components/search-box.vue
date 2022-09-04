@@ -84,7 +84,7 @@ export default {
     },
     methods: {
         delayedBlur() {
-          setTimeout((() => this.$emit('blur')).bind(this), 100)
+          setTimeout((() => this.$emit('blur')).bind(this), 200)
         },
         uniqueSearchKey(item) {
             return item.table + (item.column ? '.' + item.column : '');
@@ -107,7 +107,6 @@ export default {
 
             this.highlighted = -1;
             this.$emit('search-requested', this.searchTerm);
-            this.$refs["searchBox"].blur()
         }
     }
 }
