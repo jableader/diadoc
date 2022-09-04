@@ -142,6 +142,7 @@ class TestIndexer(unittest.TestCase):
 
       path = results[0]['path']
       self.assertTrue(path.endswith('.md'), msg=f'Expected end with ".md": "{path}"')
+      self.assertIn('ref', results[0]['caption'])
 
 
 if __name__ == '__main__':

@@ -73,12 +73,14 @@ class Indexer:
     def meta_for_file(self, path):
         node = self.meta
         parts = path.strip('/').split('/')
-        for p in parts:
+        
+        for i, p in enumerate(parts):
             if not p in node:
-                break
+               path = join('/', *parts[:i])
+               break
 
             node = node[p]
-        return node['__meta'] if '__meta' in node else None
+        return node['__meta'] if '__meta' in node else None, path
 
     def _ref_to_filepath(self, path):
         return join(self.reference_dir, path.strip('/'))
@@ -105,12 +107,20 @@ class Indexer:
                 elif file.endswith('.md'):
                   self.index(join(refroot, file))
 
+    def get_caption(self, path):
+        nearest_meta, nearest_path = self.meta_for_file(path)
+        nearest_caption = nearest_meta['caption'] if nearest_meta and 'caption' in nearest_meta else basename(nearest_path)
+
+        if nearest_path == path:
+          return nearest_caption
+        else:
+          return f"{nearest_caption} - {basename(path)}"
+
     def index(self, path):
         if not path.startswith('/'):
             raise Exception(f"Expected reference path, not filepath: {path}")
 
-        m = self.meta_for_file(path)
-        caption = m['caption'] if m and 'caption' in m else basename(path)
+        caption = self.get_caption(path)
         content = self._read_reference_document(path)
 
         writer = self.idx.writer()
