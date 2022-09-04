@@ -65,7 +65,7 @@ input[type=text] {
 <script>
 
 export default {
-    emits: ['blur'],
+    emits: ['blur', 'update-suggestions', 'search-requested'],
     props: {
         suggestions: {
             type: Array,

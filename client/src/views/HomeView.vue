@@ -12,7 +12,7 @@
     </div>
 
     <div class="bottom-level">
-      <splitpanes @resize="ev => panelResized(ev, '')">
+      <splitpanes @resize="ev => panelResized(ev, '')" v-if="reference">
         <pane min-size="25" :size="layout.container.size" ref="container">
           <splitpanes :horizontal="layout.container.size < 50" @resize="ev => panelResized(ev, 'container')">
             <pane v-if="searchResults" :size="layout.container.results.size" ref="container.results">
