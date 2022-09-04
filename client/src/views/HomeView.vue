@@ -12,24 +12,27 @@
     </div>
 
     <div class="bottom-level">
-      <splitpanes @resize="panelResized">
-        <pane v-if="searchResults" max-size="50" :size="szResults" ref="paneResults">
-          <div class="search-results primary">
-            <div style = "display: flex; justify-content:flex-end">
-              <button @click="searchResults = null">X</button>
-            </div>
-            <span>Search Results</span>
-            <results-panel :searchResults="searchResults" :selectedId="selectedReferenceId"
-              @item-selected="showReference" />
-          </div>
-        </pane>
+      <splitpanes @resize="ev => panelResized(ev, '')">
+        <pane min-size="25" :size="layout.container.size" ref="container">
+          <splitpanes :horizontal="layout.container.size < 50" @resize="ev => panelResized(ev, 'container')">
+            <pane v-if="searchResults" :size="layout.container.results.size" ref="container.results">
+              <div class="search-results primary">
+                <div style = "display: flex; justify-content:flex-end">
+                  <button @click="searchResults = null">X</button>
+                </div>
+                <span>Search Results</span>
+                <results-panel :searchResults="searchResults" :selectedId="selectedReferenceId"
+                  @item-selected="showReference" />
+              </div>
+            </pane>
 
-        <pane min-size="25" :size="szGraph" ref="paneGraph">
-          <dbgraph ref="graph" :reference="reference" :selected-reference="selectedReferenceId"
-            @reference-requested="showReference" />
+            <pane :size="layout.container.graph.size" ref="container.graph">
+              <dbgraph ref="graph" :reference="reference" :selected-reference="selectedReferenceId"
+                @reference-requested="showReference" />
+            </pane>
+          </splitpanes>         
         </pane>
-
-        <pane v-if="selectedReferenceId" :size="szRef" ref="paneRef">
+        <pane v-if="selectedReferenceId" :size="layout.ref.size" ref="ref">
           <div class="reference-panel">
             <reference-panel :source-id="selectedReferenceId" :referenceMetaData="reference"
               @close="selectedReferenceId = null" @reference-requested="showReference" />
@@ -57,17 +60,24 @@ export default {
     SearchBox,
     ResultsPanel,
     ReferencePanel,
-    Splitpanes, Pane
+    Splitpanes, Pane,
   },
   data (){
+    const layout = {
+      container: {
+        size: 100, index: 0,
+        results: { size: 25, index: 0 },
+        graph:  { size: 100, index: 1 },
+      },
+      ref: { size: 30, index: 1 },
+    };
+
     return {
       searchSuggestions: [],
       searchResults: null,
       reference: null,
       selectedReferenceId: null,
-      szResults: 25,
-      szRef: 50,
-      szGraph: 100,
+      layout,
     }
   },
   created() {
@@ -85,19 +95,18 @@ export default {
     showReference(id) {
       this.selectedReferenceId = id;
     },
-    panelResized(ev) {
-      const panes = ['Results', 'Graph', 'Ref'];
-      const visible = panes.filter(p => this.$refs[`pane${p}`]);
-      
-      let graphSize = 100;
-      for (let i = 0; i < visible.length; i++) {
-        if (visible[i] != 'Graph') {
-          this['sz'+visible[i]] = ev[i].size;
-          graphSize -= ev[i].size;
-        }
+    panelResized(ev, parent) {
+      let layout = this.layout, prefix = '';
+      if (parent) {
+        layout = parent.split('.').reduce((l, n) => l[n], layout);
+        prefix = parent + '.';
       }
 
-      this.szGraph = graphSize;
+      const visible = Object.keys(layout)
+        .sort((a, b) => layout[a].index - layout[b].index)
+        .filter(k => this.$refs[prefix + k]);
+
+      visible.forEach((key, i) => layout[key].size = ev[i].size);
     },
     updateSearchSuggestions(text) {
       data.searchSuggestions(text)

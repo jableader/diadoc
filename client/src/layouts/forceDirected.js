@@ -129,8 +129,6 @@ function layout(id, ref, label, childShapes, style) {
     const ymax = maxOf(childShapes, c => c.box.y + c.box.h);
     const xmax = maxOf(childShapes, c => c.box.x + c.box.w);
     
-    console.log(id.path, shapes, bbox, { bottomleft: { x: xmin, y: ymax }, topright: { x: xmax, y: ymin }});
-
     const padding = 5;
     const children = new Shape.Children(childShapes, Shape.Box(padding, label.bottom + padding, xmax + 2 * padding, ymax + 2 * padding), 1);
     const shapeBox = Shape.Box(
