@@ -100,12 +100,23 @@ export default {
           this.searchResults = g;
           this.searchSuggestions = [];
         });
+      } else {
+        this.searchResults = null;
+        this.searchSuggestions = [];
       }
     }
   },
   created() {
     data.fetchReferenceMetadata()
       .then(g => this.reference = g);
+
+      const prompt = this.query;
+      if (prompt) {
+        return data.searchResults(prompt).then(g => {
+          this.searchResults = g;
+          this.searchSuggestions = [];
+        });
+      }
   },
   methods: {
     search(item) {
