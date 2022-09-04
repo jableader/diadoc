@@ -62,7 +62,7 @@ function repulseOverlappingBoxes() {
   });
 }
 
-function runGraphLayout(layout, id) {
+function runGraphLayout(layout) {
   const limit = 100;
   layout.repulseOverlappingBoxes = repulseOverlappingBoxes;
   for (var i = 0, energy = 9999; i < limit && energy > 0.01; i++) {
@@ -112,7 +112,6 @@ function layout(id, ref, label, childShapes, style) {
     var layout = getSpringyLayout(g);
     runGraphLayout(layout, id, g);
 
-    var bbox = layout.getBoundingBox();
     let xmin = Number.MAX_SAFE_INTEGER, ymin = Number.MAX_SAFE_INTEGER;
     layout.eachNode(function(n, p) {
       xmin = Math.min(p.p.x, xmin);
