@@ -189,9 +189,7 @@ export default {
 
 .splitpanes__splitter {
   background-color: #625ad8;
-  border-left: solid medium #8882df;
-  border-right: solid medium #8882df;
-  width: 4pt
+  border: solid medium #8882df;
 }
 
 </style>
