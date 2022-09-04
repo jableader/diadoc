@@ -44,7 +44,9 @@ export default {
     },
     computed: {
         relatedItems() {
+          if (this.referenceMetaData && this.sourceId)
             return graph.getRelated(this.referenceMetaData, this.sourceId);
+          return []
         }
     },
     methods: {
