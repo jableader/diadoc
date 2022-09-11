@@ -1,5 +1,4 @@
 <template>
-  <div class="container">
     <svg ref="canvas">
       <defs>
         <marker id="head" orient="auto"
@@ -11,7 +10,7 @@
 
       <g id="svg-pan-zoom-viewport" :class="{ animate: recentering }">
         <svg-box v-for="s in shapes" :shape="s" :key="s.id" @shape-selected="shapeSelected" />
-        
+
           <!-- Debug helper - show bounding boxes
           <rect v-for="b in bboxes" :key="b" :x="b.x" :y="b.y" :width="b.w" :height="b.h" fill-opacity="0" stroke="#FF0000" strokeWidth="0.5" />
           -->
@@ -23,25 +22,12 @@
         </g>
       </g>
     </svg>
-    <nav-toolbar 
-      :transition-speed="transitionSpeed"
-      @recenter="recenter(true)"
-      @update-transition-speed="v => transitionSpeed = v"
-      />
-  </div>
 </template>
 
 <style scoped>
 
 .animate {
   transition: v-bind('transition');
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
 }
 
 svg {
@@ -54,7 +40,6 @@ svg {
 import svgPanZoom from 'svg-pan-zoom'
 import svgBox from './svg-box.vue'
 import Shape from '@/shape.js'
-import NavToolbar from './nav-toolbar.vue';
 
 function createPanZoom(targetElement) {
     const panZoom = svgPanZoom(targetElement, { 
@@ -98,8 +83,8 @@ function centerElement(box, panZoom){
 }
 
 export default {
-  components: { svgBox, NavToolbar },
-  emits: ['shape-selected'],
+  components: { svgBox },
+  emits: ['shape-selected', 'nav'],
   props: {
       shapes: {
           type: [Object, null], // Graph of items
@@ -109,9 +94,13 @@ export default {
         type: [Array, null],
       },
       selection: {
-          type: Object, // ID
-          required: false
+        type: Object, // ID
+        required: false
       },
+      transitionSpeed: {
+        type: Number,
+        default: 0.5
+      }
   },
   computed:  {
     bboxes() {
@@ -122,7 +111,7 @@ export default {
     }
   },
   data() {
-    return { recentering: false, transitionSpeed: 1.5 };
+    return { recentering: false };
   },
   watch: {
     selection(){
@@ -135,6 +124,11 @@ export default {
   },
   mounted() {
     this.recenter();
+    this.$emit('nav', {
+      recenter: (function(refit) {
+        this.recenter(refit);
+      }).bind(this),
+    });
   },
   unmounted() {
     this.resetPanZoom()

@@ -1,13 +1,24 @@
 <template>
-	<svg-layout
-        ref="jointWrapper"
-        :shapes="shapes"
-        :links="links"
-        :selection="selectedReference"
-        @shape-selected="requestSelect" />
+  <div class="container">
+    <svg-layout
+          ref="jointWrapper"
+          :shapes="shapes"
+          :links="links"
+          :selection="selectedReference"
+          :transition-speed="transitionSpeed"
+          @shape-selected="id => $emit('reference-requested', id)"
+          @nav="navReady"
+          />
+    <nav-toolbar 
+      :transition-speed="transitionSpeed"
+      @recenter="nav.recenter(true)"
+      @update-transition-speed="v => transitionSpeed = v"
+      />
+  </div>
 </template>
 
 <script>
+import NavToolbar from './nav-toolbar.vue';
 import SvgLayout from './svg-layout.vue'
 import Graph from '@/graph.js';
 import Layout from '@/layouts/layout.js';
@@ -33,10 +44,8 @@ function buildShapes(reference) {
 
 export default {
   name: 'DbGraph',
-  components: {
-    'svg-layout': SvgLayout
-  },
-  emits: ['reference-requested'],
+  components: { SvgLayout, NavToolbar },
+  emits: ['reference-requested', 'nav'],
   props: {
       reference: {
           type: [Object, null],
@@ -48,7 +57,7 @@ export default {
       }
   },
   data() {
-    return { selected: null, ...buildShapes(this.reference ?? {})}
+    return { selected: null, nav: null, transitionSpeed: 1.5, ...buildShapes(this.reference ?? {})}
   },
   watch: {
       reference(v) {
@@ -58,18 +67,22 @@ export default {
       }
   },
   methods: {
-    requestSelect(id) {
-        if (!id) {
-            return;
-        }
-
-        this.$emit('reference-requested', id);
+    navReady(nav) {
+      this.nav = nav;
+      this.$emit('nav', nav);
     }
   }
 }
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
 </style>

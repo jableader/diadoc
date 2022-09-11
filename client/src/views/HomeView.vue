@@ -28,7 +28,7 @@
 
             <pane :size="layout.container.graph.size" ref="container.graph">
               <dbgraph ref="graph" :reference="reference" :selected-reference="selectedReferenceId"
-                @reference-requested="showReference" />
+                @reference-requested="showReference" @nav="n => nav = n" />
             </pane>
           </splitpanes>         
         </pane>
@@ -124,31 +124,43 @@ export default {
       this.showPage(this.selectedReferenceId, item);
     },
     showReference(id) {
-      this.showPage(id, this.query);
-    },
-    showPage(id, searchtext) {
-      const query = searchtext ? { query: searchtext } : null
-      if (id) {
-        this.$router.push({
-          path: '/v' + Graph.pathForId(id),
-          query
-        });
+      const selected = this.selectedReferenceId;
+      if (!id && !selected) {
+        this.nav.recenter(true);
+      }
+      else if (selected && id && Graph.eq(id, selected)) {
+        this.nav.recenter();
       }
       else {
-        this.$router.push({ path: '/', query });
+        this.showPage(id, this.query);
       }
     },
-    updateHstack() {
-      if (this.layout.container.size < 50) {
-        this.hstack = true;
-        return;
-      }
-      else if (this.layout.container.graph.size < 50) {
-        this.hstack = true;
-        return;
+    showPage(id, searchtext) {
+      const query = searchtext ? { query: searchtext } : null;
+      let route = { path: '/', query };
+      if (id) {
+        route = { path: '/v' + Graph.pathForId(id), query };
       }
 
-      this.hstack = (this.layout.container.size / 100.0) * (this.layout.container.size / 100.0) < 0.25
+      this.$router.push(route);
+      this.nav.recenter(!!id);
+    },
+    updateHstack() {
+      let newhstack = this.getPreferredHstack();
+      if (newhstack != this.hstack) {
+        this.hstack = newhstack;
+        this.nav.recenter();
+      }
+    },
+    getPreferredHstack() {
+      if (this.layout.container.size < 50) {
+        return true;
+      }
+      else if (this.layout.container.graph.size < 50) {
+        return false;
+      }
+
+      return (this.layout.container.size / 100.0) * (this.layout.container.size / 100.0) < 0.25;
     },
     panelResized(ev, parent, updateHstack) {
       let layout = this.layout, prefix = '';
