@@ -3,7 +3,7 @@
       <div class="reference-header">
         <button @click="$emit('close')">X</button>
         &nbsp;&nbsp;
-        <span> {{ friendlyId(sourceId) }} </span>
+        <linking-path :id="sourceId" @reference-requested="id => $emit('reference-requested', id)"/>
       </div>
 
       <reference-documentation :source-id="sourceId" />
@@ -26,10 +26,12 @@
 <script>
 import ReferenceDocumentation from './reference-documentation.vue'
 import graph from '@/graph.js'
+import LinkingPath from './linking-path.vue';
 
 export default {
     components: {
-        ReferenceDocumentation
+        ReferenceDocumentation,
+        LinkingPath
     },
     emits: ['reference-requested', 'close'],
     props: {
