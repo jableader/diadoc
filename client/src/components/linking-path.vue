@@ -1,12 +1,19 @@
 <template>
   <span class="outer">
-    <span class="node" v-for="root in roots" :key="root.id" @click="$emit('reference-requested', root.id)">/{{ root.name }}</span>
+    <span class="node" v-for="root in roots" :key="root.id">
+      <router-link :to="root.url">/{{ root.name }}</router-link>
+    </span>
   </span>
 </template>
 
 <style scoped>
-  .outer:hover .node:not(.node:hover ~ .node) {
+  .outer .node:hover {
+    cursor: pointer;
     font-weight: bold;
+  }
+
+  .outer .node {
+    margin-right: 0.3em;
   }
 </style>
 
@@ -23,7 +30,11 @@ export default {
   },
   computed: {
     roots() {
-      return graph.roots(this.id).map(id => ({ id, name: graph.leafName(id)}));
+      return graph.roots(this.id).map(id => ({ 
+        id,
+        url: `/v${graph.pathForId(id)}`,
+        name: graph.leafName(id)
+      }));
     },
     fid() {
       return graph.friendlyId(this.id);
