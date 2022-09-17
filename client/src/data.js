@@ -1,6 +1,6 @@
 import graph from './graph'
 
-const contentBaseUrl = process.env.CONFIG_URL ?? "http://localhost:5000";
+const contentBaseUrl = process.env.VUE_APP_CONFIG_URL ?? "http://localhost:5000";
 
 const lazyFetch = function(url) {
     let cached = null;
