@@ -1,10 +1,17 @@
 services:
   frontend:
     build: ./client
+    hostname: frontend
     ports:
       - 8080:8080
 
   backend:
     build: ./content
+    hostname: backend
     ports:
       - 5000:5000
+
+  reverse:
+    build: ./reverseproxy
+    ports:
+      - 80:80
