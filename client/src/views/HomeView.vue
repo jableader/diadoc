@@ -139,7 +139,7 @@ export default {
       const query = searchtext ? { query: searchtext } : null;
       let route = { path: '/', query };
       if (id) {
-        route = { path: '/v' + Graph.pathForId(id), query };
+        route = { path: Graph.pathForId(id), query };
       }
 
       this.$router.push(route);

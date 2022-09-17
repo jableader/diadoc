@@ -32,7 +32,7 @@ export default {
     roots() {
       return graph.roots(this.id).map(id => ({ 
         id,
-        url: `/v${graph.pathForId(id)}`,
+        url: graph.pathForId(id),
         name: graph.leafName(id)
       }));
     },
