@@ -4,7 +4,6 @@ except ModuleNotFoundError:
     from app import indexer
 
 import argparse
-import pathlib
 import os
 import sys
 
@@ -24,6 +23,7 @@ if __name__ == '__main__':
 
     print("Indexing directory %s" % args.reference_path)
     idx.index_dir('')
+    print("Finished indexing")
     sys.exit(0)
 
 from fastapi import FastAPI
