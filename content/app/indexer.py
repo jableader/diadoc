@@ -55,8 +55,8 @@ def simplify(query):
   except NotImplementedError:
     pass
 
-def get_text_around(regex, haystack, n=50):
-  match = re.search(r'\b' + regex + r'\b', haystack, flags=re.IGNORECASE)
+def get_text_around(snippet, haystack, n=50):
+  match = re.search(r'\b' + re.escape(snippet) + r'\b', haystack, flags=re.IGNORECASE)
   if match:
     mid = (match.start(0) + match.end(0)) // 2
     return haystack[max(0, mid - n):min(mid + n, len(haystack))]
